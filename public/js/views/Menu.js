@@ -1,112 +1,199 @@
-// KOVA Menu - Pro Giant Menu - Like Google Filters - DOPETONE NOIR - FIXED DOCK
+// KOVA Menu - MOBILE LOCKED - NO SIDE DRAG
+const API_BASE = "https://kova-clean-api.dopetone701.workers.dev";
+
 export const Menu = {
   dishes: [],
   page: 0,
   activeFilter: 'All',
+  searchQuery: '',
+  cart: JSON.parse(localStorage.getItem('kova_cart')||'[]'),
+  wishlist: JSON.parse(localStorage.getItem('kova_wish')||'[]'),
 
   menuData: [
-    { title: 'Hamachi Tiradito', ar: 'هاماشي', desc: 'Ember yuzu, finger lime, shiso', price: '72', tags: ['RAW','COLD','GF'], section: 'Raw & Cold', fire: 'Stone' },
-    { title: 'Wagyu Tartare — Stone', ar: 'تارتار واغيو', desc: '800°C stone seared, quail yolk, sourdough', price: '85', tags: ['RAW','HOT','CHEF'], section: 'Raw & Cold', fire: 'Stone' },
-    { title: 'Tahina Eggplant', ar: 'باذنجان', desc: '12h smoked, black tahina, pomegranate', price: '48', tags: ['COLD','V','VG'], section: 'Raw & Cold', fire: 'Fire' },
-    { title: 'Wagyu Ribeye — Stone', ar: 'ريب آي', desc: '45-day dry, 800°C stone, lime salt', price: '185', tags: ['HOT','FIRE','SIGNATURE'], section: 'From The Jمر', fire: 'Fire' },
-    { title: 'Bone Marrow — Ember', ar: 'نخاع', desc: 'Oak ember, parsley, charred bread', price: '92', tags: ['HOT','FIRE'], section: 'From The Jمر', fire: 'Fire' },
-    { title: 'Smoked Lamb — 12H', ar: 'لحم مدخن', desc: 'Oak smoke 12H, date molasses, toum', price: '142', tags: ['HOT','FIRE'], section: 'From The Jمر', fire: 'Fire' },
-    { title: 'KOVA Kofta', ar: 'كفتة كوڤا', desc: 'Flame grilled, toum khal, pickles', price: '78', tags: ['HOT','FIRE'], section: 'From The Jمر', fire: 'Fire' },
-    { title: 'Seabass — Flame', ar: 'قاروص', desc: 'Charred, tahini, kohlrabi, barberry', price: '148', tags: ['HOT','FIRE','GF'], section: 'From The Jمر', fire: 'Fire' },
-    { title: 'Truffle Khubz', ar: 'خبز ترافل', desc: 'Wood fired, black truffle butter, sea salt', price: '52', tags: ['HOT','STONE','V'], section: 'Stone & Bread', fire: 'Stone' },
-    { title: 'Knafeh Brûlée', ar: 'كنافة', desc: 'Nabulsi cheese, orange blossom, ember kataifi', price: '54', tags: ['HOT','STONE'], section: 'Sweets', fire: 'Stone' },
-    { title: 'Date Maamoul Ice', ar: 'معمول', desc: 'Ember date, tahina ice cream', price: '42', tags: ['COLD','V'], section: 'Sweets', fire: 'Cold' },
-    { title: 'Karak Chai', ar: 'كرك', desc: 'Ember milk, aged cardamom, saffron', price: '22', tags: ['HOT'], section: 'Drinks', fire: 'Hot', type: 'Coffee & Tea' },
-    { title: 'Turkish Coffee', ar: 'قهوة تركية', desc: 'Double roasted, cardamom dust', price: '24', tags: ['HOT'], section: 'Drinks', fire: 'Hot', type: 'Coffee & Tea' },
-    { title: 'Iced Spanish Latte', ar: 'لاتيه بارد', desc: 'Ember condensed milk, double shot', price: '32', tags: ['COLD'], section: 'Drinks', fire: 'Cold', type: 'Coffee & Tea' },
-    { title: 'Jمر Cola', ar: 'كولا', desc: 'Smoked date cola, charred lime', price: '28', tags: ['COLD'], section: 'Drinks', fire: 'Cold', type: 'Cold' },
-    { title: 'Hibiscus & Smoke', ar: 'كركديه', desc: 'Smoked hibiscus, soda, lime', price: '30', tags: ['COLD'], section: 'Drinks', fire: 'Cold', type: 'Cold' },
+    { title: 'Hamachi Tiradito', ar: 'هاماشي', desc: 'Ember yuzu, finger lime, shiso', price: '72', tags: ['RAW','GF'], section: 'Raw & Cold', fire: 'Raw', image: '' },
+    { title: 'Wagyu Ribeye — Stone', ar: 'ريب آي', desc: '45-day dry, 800°C stone', price: '185', tags: ['HOT','SIGNATURE'], section: 'From The Jمر', fire: 'Flame', image: '' },
   ],
 
   async render() {
+    try {
+      const res = await fetch(`${API_BASE}/api/menu`);
+      const live = await res.json();
+      if (Array.isArray(live) && live.length > 0) {
+        this.dishes = live.map(m => ({
+          title: m.name, ar: m.name_ar||'', desc: m.description||'', price: m.price,
+          tags: [m.category, m.badge].filter(Boolean),
+          section: m.category||'Flame', fire: m.category||'Flame',
+          image: m.image||'', id: m.id, category: m.category||'', badge: m.badge||'', isLive: true
+        }));
+      } else this.dishes = [...this.menuData];
+    } catch(e){ this.dishes = [...this.menuData]; }
+
+    const urlFilter = new URLSearchParams(location.hash.split('?')[1]||'').get('filter');
+    if(urlFilter) this.activeFilter = urlFilter;
+
+    const cartCount = this.cart.reduce((s,i)=>s+(i.qty||1),0);
+    const wishCount = this.wishlist.length;
+
     return `
-      <div style="display:flex;flex-direction:column">
-        <div style="padding:0 0 16px 0">
-          <h2 style="font-size:32px;font-weight:900;letter-spacing:-1px">Menu <span class="ar" style="font-size:14px;color:var(--text-muted)">— مطبخ الجمر</span></h2>
-          <p style="color:var(--text-muted);font-size:13px;margin-top:4px">Scroll — like Google Photos • Filters work like a bar</p>
+      <style>
+      /* PC - KEEP EXACT */
+     .menu-wrap{max-width:1300px;margin:0 auto;padding:0 24px 80px 24px;box-sizing:border-box;overflow-x:hidden;touch-action:pan-y}
+     .filter-bar{position:sticky;top:0;z-index:25;background:#0A0A0D;border-bottom:1px solid #27272A;margin:0 -24px;padding:12px 24px;display:flex;gap:8px;align-items:center;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x}
+     .filter-bar::-webkit-scrollbar{display:none}
+     .filter-chip{flex-shrink:0;white-space:nowrap;padding:7px 13px;border-radius:999px;border:1px solid #27272A;font-weight:700;font-size:11px;cursor:pointer}
+     .filter-chip.active{background:#F4F4F5;color:#0A0A0D;border-color:#F4F4F5}
+     .filter-chip.idle{background:#1C1C1F;color:#A1A1AA}
+     .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:18px;width:100%;box-sizing:border-box}
+     .k-card{background:#1C1C1F;border:1px solid #27272A;border-radius:16px;overflow:hidden;cursor:pointer;transition:.2s;position:relative;min-width:0;max-width:100%;box-sizing:border-box}
+
+      /* MOBILE LOCK - NO SIDE DRAG */
+      @media(max-width:768px){
+        html, body { overflow-x:hidden!important; max-width:100vw!important; position:relative!important; touch-action:pan-y!important; overscroll-behavior-x:none!important; }
+       .menu-wrap{
+          padding:0 12px 80px 12px!important;
+          margin:0 auto!important;
+          width:100%!important;
+          max-width:100%!important;
+          box-sizing:border-box!important;
+          overflow-x:hidden!important;
+          transform:translateZ(0); /* creates new layer, stops drag */
+        }
+       .filter-bar{
+          margin:0 -12px!important;
+          padding:10px 12px!important;
+          width:calc(100% + 24px)!important;
+          max-width:100vw!important;
+          box-sizing:border-box!important;
+          overscroll-behavior-x:contain!important;
+        }
+       .menu-grid{
+          grid-template-columns:1fr!important;
+          gap:12px!important;
+          width:100%!important;
+        }
+        /* 2 cols only on bigger phones, but locked */
+        @media(min-width:430px) and (max-width:768px){
+         .menu-grid{grid-template-columns:repeat(2,1fr)!important}
+        }
+       .k-card{width:100%!important;max-width:100%!important;min-width:0!important}
+      }
+      </style>
+
+      <div class="menu-wrap" id="menuWrap">
+        <div class="menu-head" style="padding:18px 0 8px 0;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box">
+          <div style="min-width:0"><h2 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Menu <span style="font-size:11px;color:#71717A;font-weight:500">— ${this.dishes.length}</span></h2><p style="color:#71717A;font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Use nav search • ${this.activeFilter}</p></div>
+          <div style="display:flex;gap:8px;flex-shrink:0"><button id="wishBtn" style="background:#1C1C1F;border:1px solid #27272A;color:#F4F4F5;padding:8px 12px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer">❤️ ${wishCount}</button><button id="cartBtn" style="background:#CBFF00;border:none;color:#0A0A0D;padding:8px 14px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer">🛒 ${cartCount}</button></div>
         </div>
 
-        <div id="filterBar" style="display:flex;gap:8px;overflow-x:auto;white-space:nowrap;position:sticky;top:0;z-index:20;margin:0 -32px 24px -32px;padding:14px 32px;background:var(--bg-app);border-bottom:1px solid var(--border);scrollbar-width:none;-ms-overflow-style:none">
-          ${['All','Raw & Cold','From The Jمر','Stone & Bread','Sweets','Drinks','HOT','COLD','FIRE','STONE','Coffee & Tea','V','VG'].map(f=>`
-            <button data-filter="${f}" class="filter-chip" style="flex-shrink:0;white-space:nowrap;padding:8px 16px;border-radius:99px;border:1px solid var(--border);background:${this.activeFilter===f?'var(--text-main)':'var(--bg-card)'};color:${this.activeFilter===f?'var(--bg-app)':'var(--text-muted)'};font-weight:700;font-size:12px;cursor:pointer;transition:.15s">${f}</button>
-          `).join('')}
+        <div class="filter-bar" id="filterBar">
+          ${['All','Flame','Raw & Cold','Stone','Sweets','Drinks','Chef Pick','Trending','Vegan','Gluten Free','Signature','Hot'].map(f=>{
+            const active = this.activeFilter===f;
+            return `<button data-filter="${f}" class="filter-chip ${active?'active':'idle'}">${f}</button>`;
+          }).join('')}
         </div>
 
-        <div id="menuGrid" class="grid"></div>
-        <div id="sentinel" style="height:80px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px">Loading more from ember...</div>
+        <div id="menuGrid" class="menu-grid"></div>
+        <div id="sentinel" style="height:40px;display:flex;align-items:center;justify-content:center;color:#71717A;font-size:11px;margin-top:10px">Loading ember...</div>
       </div>
     `;
   },
 
   async afterRender() {
+    // HARD LOCK BODY DRAG
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.maxWidth = '100vw';
+    document.body.style.touchAction = 'pan-y';
+    document.body.style.overscrollBehaviorX = 'none';
+
     const grid = document.getElementById('menuGrid');
     const chips = document.querySelectorAll('.filter-chip');
+    const cartBtn = document.getElementById('cartBtn');
+    const wishBtn = document.getElementById('wishBtn');
+    const menuWrap = document.getElementById('menuWrap');
 
-    // hide scrollbar
-    const s = document.createElement('style');
-    s.innerHTML = `#filterBar::-webkit-scrollbar{display:none} #filterBar{ -webkit-overflow-scrolling: touch; }`;
-    document.head.appendChild(s);
+    // prevent horizontal drag on wrap
+    let startX = 0;
+    menuWrap.addEventListener('touchstart', e=>{ startX = e.touches[0].clientX; }, {passive:true});
+    menuWrap.addEventListener('touchmove', e=>{
+      const diff = Math.abs(e.touches[0].clientX - startX);
+      const isFilterBar = e.target.closest('.filter-bar');
+      if(diff > 10 &&!isFilterBar){ /* allow vertical only */ }
+    }, {passive:true});
 
-    chips.forEach(chip => {
-      chip.onclick = () => {
-        this.activeFilter = chip.dataset.filter;
-        chips.forEach(c=>{
-          const isActive = c.dataset.filter === this.activeFilter;
-          c.style.background = isActive? 'var(--text-main)' : 'var(--bg-card)';
-          c.style.color = isActive? 'var(--bg-app)' : 'var(--text-muted)';
-        });
-        grid.innerHTML = '';
-        this.page = 0;
-        loadMore();
-      };
-    });
+    const navSearch = document.querySelector('input[type="search"], #searchInput,.nav-search input, input[placeholder*="Search"]');
+    if(navSearch){ navSearch.addEventListener('input', (e)=>{ this.searchQuery = e.target.value; loadMore(true); }); }
 
-    const getFiltered = () => {
-      if (this.activeFilter === 'All') return this.menuData;
-      return this.menuData.filter(d =>
-        d.section === this.activeFilter ||
-        d.fire === this.activeFilter ||
-        d.tags.includes(this.activeFilter) ||
-        d.type === this.activeFilter
-      );
+    const updateCounts = () => {
+      const c = this.cart.reduce((s,i)=>s+(i.qty||1),0);
+      cartBtn.innerHTML = `🛒 ${c}`;
+      wishBtn.innerHTML = `❤️ ${this.wishlist.length}`;
+      localStorage.setItem('kova_cart', JSON.stringify(this.cart));
+      localStorage.setItem('kova_wish', JSON.stringify(this.wishlist));
     };
 
-    const loadMore = () => {
+    const getFiltered = () => {
+      let data = [...this.dishes];
+      if(this.activeFilter!=='All'){
+        const f = this.activeFilter.toLowerCase();
+        data = data.filter(d=>{
+          const hay = `${d.section} ${d.fire} ${d.category} ${d.tags.join(' ')} ${d.badge}`.toLowerCase();
+          return hay.includes(f) || (f==='vegan'&&hay.includes('vg')) || (f==='gluten free'&&hay.includes('gf'));
+        });
+      }
+      if(this.searchQuery.trim()){
+        const q = this.searchQuery.toLowerCase();
+        data = data.filter(d=> `${d.title} ${d.ar} ${d.desc} ${d.section} ${d.fire} ${d.category}`.toLowerCase().includes(q));
+      }
+      return data;
+    };
+
+    const loadMore = (reset=false) => {
+      if(reset){ grid.innerHTML=''; this.page=0; }
       const data = getFiltered();
-      if (data.length === 0) return;
-      for (let i = 0; i < 6; i++) {
-        const d = data[(this.page * 6 + i) % data.length];
+      if(data.length===0){ grid.innerHTML=`<div style="grid-column:1/-1;padding:40px;text-align:center;color:#71717A">No results</div>`; return; }
+      for(let i=0;i<8;i++){
+        const idx = this.page*8+i; if(idx>=data.length) break;
+        const d = data[idx];
+        const inWish = this.wishlist.find(w=>w.id===d.id);
+        const inCart = this.cart.find(c=>c.id===d.id);
         grid.insertAdjacentHTML('beforeend', `
-          <div class="card" style="cursor:pointer">
-            <div class="card-img" style="background:linear-gradient(135deg,var(--bg-hover),var(--border));display:flex;align-items:end;padding:12px">
-              <span style="font-size:10px;background:var(--bg-card);border:1px solid var(--border);padding:4px 8px;border-radius:99px">${d.section} • ${d.fire}</span>
+          <div class="k-card" data-id="${d.id}">
+            <div style="height:170px;background:${d.image?`url(${d.image}) center/cover`:`linear-gradient(135deg,#27272A,#1C1C1F)`};position:relative;overflow:hidden">
+              <span style="position:absolute;top:8px;left:8px;background:#0A0A0D;border:1px solid #27272A;color:#F4F4F5;font-size:8px;font-weight:700;padding:3px 7px;border-radius:999px;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.section}</span>
+              <button class="wish-heart" data-id="${d.id}" style="position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:999px;border:1px solid #27272A;background:rgba(10,10,13,0.85);color:${inWish?'#FF4E1F':'#F4F4F5'};cursor:pointer;z-index:2">${inWish?'❤️':'🤍'}</button>
+              <span style="position:absolute;bottom:8px;right:8px;background:#1C1C1F;border:1px solid #27272A;color:#F4F4F5;font-size:10px;font-weight:800;padding:4px 8px;border-radius:999px">AED ${d.price}</span>
             </div>
-            <div class="card-body">
-              <div style="display:flex;justify-content:space-between;align-items:start">
-                <div class="card-title" style="font-size:15px">${d.title}</div>
-                <div style="font-weight:800;color:var(--accent)">${d.price}</div>
-              </div>
-              <div class="ar" style="font-size:11px;color:var(--text-muted)">${d.ar}</div>
-              <div class="card-desc" style="margin-top:6px">${d.desc}</div>
-              <div style="display:flex;gap:4px;margin-top:10px;flex-wrap:wrap">
-                ${d.tags.map(t=>`<span style="font-size:9px;padding:3px 6px;border-radius:99px;border:1px solid var(--border);color:var(--text-muted)">${t}</span>`).join('')}
-              </div>
+            <div style="padding:10px;min-width:0;box-sizing:border-box">
+              <div style="font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.title}</div>
+              <div style="font-size:10px;color:#71717A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.ar}</div>
+              <div style="font-size:11px;color:#A1A1AA;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:30px;word-break:break-word">${d.desc}</div>
+              <button class="add-cart" data-id="${d.id}" style="margin-top:10px;width:100%;background:${inCart?'#F4F4F5':'#CBFF00'};color:#0A0A0D;border:none;padding:9px;border-radius:999px;font-weight:800;font-size:11px;cursor:pointer;box-sizing:border-box">${inCart?`✓ x${inCart.qty}`:'+ Add to Cart'}</button>
             </div>
           </div>
         `);
       }
       this.page++;
+      grid.querySelectorAll('.wish-heart').forEach(b=>{
+        b.onclick = (e)=>{ e.stopPropagation(); if(document.body.classList.contains('toolbar-open')) return; const id=b.dataset.id; const item=this.dishes.find(x=>x.id===id); const ex=this.wishlist.findIndex(w=>w.id===id); if(ex>=0) this.wishlist.splice(ex,1); else this.wishlist.push(item); updateCounts(); loadMore(true); };
+      });
+      grid.querySelectorAll('.add-cart').forEach(b=>{
+        b.onclick = (e)=>{ e.stopPropagation(); if(document.body.classList.contains('toolbar-open')) return; const id=b.dataset.id; const item=this.dishes.find(x=>x.id===id); const ex=this.cart.find(c=>c.id===id); if(ex) ex.qty=(ex.qty||1)+1; else this.cart.push({...item,qty:1}); updateCounts(); b.textContent=`✓ x${this.cart.find(c=>c.id===id).qty}`; b.style.background='#F4F4F5'; };
+      });
     };
 
-    loadMore();
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) loadMore();
-    }, { rootMargin: '300px' });
+    chips.forEach(chip=>{
+      chip.onclick = ()=>{
+        this.activeFilter = chip.dataset.filter;
+        document.querySelectorAll('.filter-chip').forEach(c=>{ c.classList.remove('active'); c.classList.add('idle'); });
+        chip.classList.add('active'); chip.classList.remove('idle');
+        loadMore(true);
+      };
+    });
+
+    loadMore(true);
+    const observer = new IntersectionObserver((entries)=>{ if(entries[0].isIntersecting) loadMore(); }, {rootMargin:'300px'});
     observer.observe(document.getElementById('sentinel'));
+    updateCounts();
   }
 };

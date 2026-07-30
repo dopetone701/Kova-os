@@ -2,17 +2,16 @@
 import { Sidebar } from './components/Sidebar.js';
 import { Topbar } from './components/Topbar.js';
 import { Router } from './router/index.js';
+import { Story } from './views/Story.js';
 
-// 1. Boot Shell (Never Reloads)
 document.addEventListener('DOMContentLoaded', () => {
   console.log('KOVA OS Booting... Backend: kova-main-api | D1 | KOVA-R2');
-  
-  // Render Shell
+ 
   Sidebar.render();
   Topbar.render();
   Router.init();
 
-  // 2. Theme Toggle Logic - Noir Default + Light
+  // Theme
   window.toggleTheme = () => {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
@@ -20,28 +19,59 @@ document.addEventListener('DOMContentLoaded', () => {
     html.setAttribute('data-theme', next);
     localStorage.setItem('kova-theme', next);
   };
-  
-  // Load saved theme
   const saved = localStorage.getItem('kova-theme');
   if (saved) document.documentElement.setAttribute('data-theme', saved);
 
-  // 3. Admin Visibility Rule - LOCKED (later we check email)
-  // For now we show admin, later we hide if not allowed
   window.checkAdminAccess = async () => {
-    // TODO LATER: fetch('/api/me') -> check allowed_admins table in D1
-    // if not allowed, hide [data-admin] button
-    const allowedEmails = ['owner@kova.ae']; // will come from D1
-    const adminBtn = document.querySelector('[data-admin]');
-    if (adminBtn) {
-      // Later: hide if not in allowedEmails
-      // adminBtn.style.display = 'none'; 
-      console.log('Admin check locked: only visible to', allowedEmails);
-    }
+    const allowedEmails = ['owner@kova.ae'];
+    console.log('Admin check locked:', allowedEmails);
   };
   checkAdminAccess();
 
-  // 4. Sidebar Collapse
-  window.toggleSidebar = () => {
-    document.getElementById('sidebar').classList.toggle('collapsed');
+  // Create dark overlay once
+  let overlay = document.getElementById('sidebar-overlay');
+  if(!overlay){
+    overlay = document.createElement('div');
+    overlay.id = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+  }
+
+  const getSb = () => document.getElementById('sidebar');
+
+  window.closeSidebar = () => {
+    const sb = getSb();
+    if(!sb) return;
+    sb.classList.remove('open');
+    overlay.classList.remove('show');
+    document.body.classList.remove('sb-open');
   };
+  window.openSidebar = () => {
+    const sb = getSb();
+    if(!sb) return;
+    if(window.innerWidth <= 768){
+      sb.classList.add('open');
+      overlay.classList.add('show');
+      document.body.classList.add('sb-open');
+    } else {
+      sb.classList.remove('collapsed');
+    }
+  };
+  window.toggleSidebar = () => {
+    const sb = getSb();
+    if(!sb) return;
+    if(window.innerWidth <= 768){
+      if(sb.classList.contains('open')) window.closeSidebar();
+      else window.openSidebar();
+    } else {
+      sb.classList.toggle('collapsed');
+    }
+  };
+
+  overlay.onclick = () => window.closeSidebar();
+
+  // Force hidden on mobile refresh
+  if(window.innerWidth <= 768){
+    getSb()?.classList.remove('open');
+    overlay.classList.remove('show');
+  }
 });
