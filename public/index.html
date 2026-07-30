@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="noir">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KOVA | كوفا — Flame Kitchen OS</title>
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="app-shell">
+  <!-- SIDEBAR - NEVER RELOADS -->
+  <aside id="sidebar" class="sidebar"></aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrap">
+    <header id="topbar" class="topbar"></header>
+    <main id="app" class="app-view">
+      <!-- Router injects views here only -->
+      <div class="loading">Loading KOVA OS...</div>
+    </main>
+  </div>
+
+  <!-- APP START - SPA, NO RELOAD -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
