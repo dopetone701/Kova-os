@@ -2,11 +2,49 @@ export const Topbar = {
   render() {
     const el = document.getElementById('topbar');
     el.innerHTML = `
+      <style>
+        #topbar .search-box:focus-within{
+          border-color: var(--accent-2)!important;
+          box-shadow: 0 0 0 3px rgba(255,78,31,0.15);
+        }
+        #topbar .btn-primary{
+          background: var(--accent);
+          color:#000;
+          transition: all .2s;
+        }
+        #topbar .btn-primary:hover{
+          background: var(--accent-2);
+          color:#fff;
+        }
+        #topbar .k-avatar{
+          width:36px;height:36px;border-radius:50%;
+          background: var(--text-main);
+          color: var(--bg-app);
+          display:flex;align-items:center;justify-content:center;
+          font-weight:900; flex-shrink:0;
+          position:relative;
+          border:2px solid var(--border);
+        }
+        [data-theme="light"] #topbar .k-avatar{
+          background:#121214; color:#fff;
+        }
+        #topbar .k-avatar:after{
+          content:'';
+          position:absolute;
+          bottom:-2px; right:-2px;
+          width:10px; height:10px;
+          background: var(--accent-2);
+          border:2px solid var(--bg-app);
+          border-radius:50%;
+          box-shadow:0 0 6px var(--accent-2);
+        }
+      </style>
+
       <button class="btn-icon" onclick="toggleSidebar()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
 
-      <div class="search-box" style="position:relative;">
+      <div class="search-box" style="position:relative; transition:border-color .2s, box-shadow .2s;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Search dishes, staff, orders..." id="globalSearch" autocomplete="off" />
         <button id="clearSearch" style="display:none; background:none; border:none; cursor:pointer; color:var(--text-muted);">✕</button>
@@ -17,7 +55,7 @@ export const Topbar = {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         </button>
         <button class="btn-primary" style="white-space:nowrap;">Book Table</button>
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-weight:900; flex-shrink:0;">K</div>
+        <div class="k-avatar">K</div>
       </div>
     `;
 
@@ -25,7 +63,6 @@ export const Topbar = {
     const clearBtn = el.querySelector('#clearSearch');
     let debounce;
 
-    // Load saved query
     const savedQ = sessionStorage.getItem('kova-search');
     if(savedQ) input.value = savedQ;
 
@@ -34,7 +71,6 @@ export const Topbar = {
       sessionStorage.setItem('kova-search', q);
       clearBtn.style.display = q ? 'block' : 'none';
 
-      // If empty -> show all
       if(!q){
         document.querySelectorAll('.card').forEach(c => {
           c.style.display = '';
@@ -43,13 +79,10 @@ export const Topbar = {
         return;
       }
 
-      // If not on menu page -> go to menu first
       const isMenu = document.querySelector('.grid') || location.pathname.includes('menu');
       if(!isMenu){
-        // Trigger router via nav click
         const menuLink = document.querySelector('[data-view="menu"]');
         if(menuLink) menuLink.click();
-        // Wait for menu render then search
         setTimeout(() => filterCards(q), 400);
       } else {
         filterCards(q);
@@ -59,7 +92,6 @@ export const Topbar = {
     const filterCards = (q) => {
       const cards = document.querySelectorAll('.card');
       if(!cards.length){
-        // Retry once if menu still loading
         setTimeout(() => filterCards(q), 300);
         return;
       }
@@ -80,13 +112,11 @@ export const Topbar = {
         if(title.includes(q) && q.length > 2) exactMatch = card;
       });
 
-      // Scroll to exact or first
       const target = exactMatch || firstMatch;
       if(target){
-        target.style.outline = '2px solid var(--accent)';
+        target.style.outline = '2px solid var(--accent-2)';
         target.style.outlineOffset = '2px';
         target.scrollIntoView({ behavior:'smooth', block:'center' });
-        // Pulse
         target.animate([
           { transform:'scale(1)' },
           { transform:'scale(1.02)' },
@@ -117,12 +147,10 @@ export const Topbar = {
       input.focus();
     });
 
-    // Auto search if we land on menu with saved query
     if(savedQ && (document.querySelector('.grid') || location.pathname.includes('menu'))){
       setTimeout(() => filterCards(savedQ.toLowerCase()), 500);
     }
 
-    // Listen for menu re-render (Router)
     const observer = new MutationObserver(() => {
       const q = input.value.trim().toLowerCase();
       if(q && document.querySelector('.grid')){

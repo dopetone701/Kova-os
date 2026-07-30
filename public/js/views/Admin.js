@@ -1,4 +1,4 @@
-// KOVA Admin OS — CLOUD R2 READY + BULK INJECTOR — DOPETONE PRO
+// KOVA Admin OS — CLOUD R2 READY + BULK INJECTOR — DOPETONE PRO — EDIT FIXED
 import { api } from '../services/api.js';
 
 const WORKER_URL = 'https://kova-clean-api.dopetone701.workers.dev';
@@ -14,24 +14,24 @@ export const Admin = {
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
           <div style="display:flex;align-items:center;gap:12px;">
             <h2 style="font-size:28px;font-weight:900;color:var(--text-main)">Admin OS</h2>
-            <span style="background:#D6FF00;color:#000;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900;">CLOUD R2 + BULK</span>
+            <span style="background:var(--accent);color:#000;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900;">CLOUD R2 + BULK</span>
           </div>
           <div style="display:flex;gap:8px">
             <button id="btnBulk" class="btn-primary" style="background:#fff;color:#000;padding:10px 14px;border-radius:99px;font-weight:800;border:none;cursor:pointer">⚡ BULK INJECTOR</button>
-            <button id="btnAddMain" class="btn-primary" style="background:#D6FF00;color:#000;padding:10px 18px;border-radius:99px;font-weight:800;border:none;cursor:pointer">+ Add ${this.activeTab}</button>
+            <button id="btnAddMain" class="btn-primary" style="background:var(--accent);color:#000;padding:10px 18px;border-radius:99px;font-weight:800;border:none;cursor:pointer">+ Add ${this.activeTab}</button>
           </div>
         </div>
 
         <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px;overflow-x:auto">
           ${['menu','staff','reservations','hero'].map(t=>`
-            <button data-tab="${t}" style="padding:8px 16px;border-radius:99px;border:1px solid var(--border);background:${this.activeTab===t?'#fff':'transparent'};color:${this.activeTab===t?'#000':'var(--text-muted)'};font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap">${t.toUpperCase()}</button>
+            <button data-tab="${t}" style="padding:8px 16px;border-radius:99px;border:1px solid var(--border);background:${this.activeTab===t?'var(--text-main)':'transparent'};color:${this.activeTab===t?'var(--bg-app)':'var(--text-muted)'};font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap">${t.toUpperCase()}</button>
           `).join('')}
         </div>
 
         <div id="adminContent">${this.getTabHTML(this.activeTab)}</div>
 
         <div id="adminModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;padding:16px;">
-          <div id="modalBox" style="background:#111;border:1px solid #333;border-radius:16px;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;color:#fff"></div>
+          <div id="modalBox" style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;color:var(--text-main)"></div>
         </div>
       </div>
     `;
@@ -40,28 +40,28 @@ export const Admin = {
   getTabHTML(tab) {
     if(tab==='menu'){
       return `
-      <div id="bulkZone" style="display:none;background:var(--bg-card);border:2px dashed #D6FF00;border-radius:16px;padding:24px;text-align:center;margin-bottom:16px">
+      <div id="bulkZone" style="display:none;background:var(--bg-card);border:2px dashed var(--accent);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px">
         <div style="font-size:32px">🔥</div>
         <b>BULK ELITE PLATE INJECTOR</b>
-        <p style="font-size:12px;color:var(--text-muted);margin:6px 0">Drop 10 images → auto R2 upload → auto D1 create. No one-by-one.</p>
-        <input type="file" id="bulkInput" multiple accept="image/*" style="margin-top:12px;color:#fff">
+        <p style="font-size:12px;color:var(--text-muted);margin:6px 0">Drop 10 images → auto R2 upload → auto D1 create.</p>
+        <input type="file" id="bulkInput" multiple accept="image/*" style="margin-top:12px;color:var(--text-main)">
         <div id="bulkGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px"></div>
-        <button id="bulkStart" style="margin-top:12px;padding:12px;background:#D6FF00;color:#000;border:none;border-radius:99px;font-weight:900;width:100%">⚡ INJECT ALL TO R2 + D1</button>
-        <div style="margin-top:12px;display:flex;gap:8px"><button id="bulkQuick" style="flex:1;padding:10px;background:#fff;color:#000;border:none;border-radius:99px;font-weight:800">⚡ QUICK 10 DEMO (Unsplash)</button></div>
-        <div id="bulkLog" style="font-family:monospace;font-size:10px;text-align:left;background:#000;padding:10px;border-radius:8px;max-height:150px;overflow:auto;margin-top:10px;border:1px solid #222">Ready. Drop elite plates bro.</div>
+        <button id="bulkStart" style="margin-top:12px;padding:12px;background:var(--accent);color:#000;border:none;border-radius:99px;font-weight:900;width:100%">⚡ INJECT ALL TO R2 + D1</button>
+        <div style="margin-top:12px;display:flex;gap:8px"><button id="bulkQuick" style="flex:1;padding:10px;background:var(--bg-hover);color:var(--text-main);border:1px solid var(--border);border-radius:99px;font-weight:800">⚡ QUICK 10 DEMO</button></div>
+        <div id="bulkLog" style="font-family:monospace;font-size:10px;text-align:left;background:#000;padding:10px;border-radius:8px;max-height:150px;overflow:auto;margin-top:10px;border:1px solid var(--border);color:#0f0">Ready. Drop elite plates bro.</div>
       </div>
       <div id="menuLiveGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px"><div style="padding:20px;color:var(--text-muted)">Loading LIVE from D1...</div></div>`;
     }
     if(tab==='staff'){
       const staff = JSON.parse(localStorage.getItem('kova_staff') || '[]');
-      return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px">${staff.map(s=>`<div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)"><span><b>${s.name}</b> • ${s.role} • ${s.shift}</span><button onclick="window.delStaff('${s.id}')" style="color:red;background:none;border:none;cursor:pointer">Del</button></div>`).join('') || '<div style="padding:24px;color:var(--text-muted)">No staff — Add first</div>'}</div>`;
+      return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px">${staff.map(s=>`<div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)"><span><b>${s.name}</b> • ${s.role} • ${s.shift}</span><button onclick="window.delStaff('${s.id}')" style="color:var(--accent-2);background:none;border:none;cursor:pointer">Del</button></div>`).join('') || '<div style="padding:24px;color:var(--text-muted)">No staff — Add first</div>'}</div>`;
     }
     if(tab==='reservations'){
       return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px"><b>WhatsApp Reservation Control</b><p style="color:var(--text-muted);font-size:13px;margin-top:8px">Connected to D1 reservations table.</p></div>`;
     }
     if(tab==='hero'){
       const hero = localStorage.getItem('kova_hero_bg') || '';
-      return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px"><b>Hero Background — Cloud R2</b><div style="margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center">${hero?`<img src="${hero}" style="width:100%;height:200px;object-fit:cover;border-radius:12px"><p style="font-size:10px;color:#0f0;margin-top:8px;word-break:break-all">${hero}</p>`:'<p style="color:var(--text-muted)">No hero — upload will go to kova-restaurant R2</p>'}<br><input type="file" id="heroFile" accept="image/*,video/*" style="margin-top:12px"><p style="font-size:11px;color:#888;margin-top:8px">Uploads to ${WORKER_URL}/api/upload → R2</p></div></div>`;
+      return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px"><b>Hero Background — Cloud R2</b><div style="margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center">${hero?`<img src="${hero}" style="width:100%;height:200px;object-fit:cover;border-radius:12px"><p style="font-size:10px;color:var(--accent);margin-top:8px;word-break:break-all">${hero}</p>`:'<p style="color:var(--text-muted)">No hero — upload will go to kova-restaurant R2</p>'}<br><input type="file" id="heroFile" accept="image/*,video/*" style="margin-top:12px"><p style="font-size:11px;color:var(--text-muted);margin-top:8px">Uploads to ${WORKER_URL}/api/upload → R2</p></div></div>`;
     }
   },
 
@@ -85,23 +85,22 @@ export const Admin = {
     document.getElementById('btnAddMain')?.addEventListener('click',()=>this.openModal(this.activeTab));
     document.getElementById('btnBulk')?.addEventListener('click',()=>{
       const zone = document.getElementById('bulkZone');
-      if(zone) zone.style.display = zone.style.display==='none' ? 'block' : 'none';
+      if(zone) zone.style.display = zone.style.display==='none'? 'block' : 'none';
     });
 
-    // BULK LOGIC
     if(this.activeTab==='menu'){
       this.loadLiveMenu();
       const bulkInput = document.getElementById('bulkInput');
       const bulkGrid = document.getElementById('bulkGrid');
       const bulkLog = document.getElementById('bulkLog');
-      const log = (m)=>{ bulkLog.textContent += "\\n"+m; bulkLog.scrollTop=9999; }
+      const log = (m)=>{ if(bulkLog){ bulkLog.textContent += "\n"+m; bulkLog.scrollTop=9999; } }
 
       bulkInput?.addEventListener('change', (e)=>{
-        this.bulkFiles = [...this.bulkFiles, ...Array.from(e.target.files)];
+        this.bulkFiles = [...this.bulkFiles,...Array.from(e.target.files)];
         bulkGrid.innerHTML = this.bulkFiles.map((f,i)=>`
-          <div style="background:#000;border:1px solid #222;border-radius:8px;overflow:hidden">
+          <div style="background:#000;border:1px solid var(--border);border-radius:8px;overflow:hidden">
             <img src="${URL.createObjectURL(f)}" style="width:100%;height:80px;object-fit:cover">
-            <div style="padding:4px;font-size:9px"><input class="bulkName" data-i="${i}" value="${f.name.replace(/\\.[^/.]+$/,'').replace(/_/g,' ')}" style="width:100%;padding:4px;background:#111;color:#fff;border:1px solid #222;border-radius:4px"></div>
+            <div style="padding:4px;font-size:9px"><input class="bulkName" data-i="${i}" value="${f.name.replace(/\.[^/.]+$/,'').replace(/_/g,' ')}" style="width:100%;padding:4px;background:var(--bg-hover);color:var(--text-main);border:1px solid var(--border);border-radius:4px"></div>
           </div>
         `).join('');
         log(`Added ${e.target.files.length} images. Total ${this.bulkFiles.length}`);
@@ -148,7 +147,6 @@ export const Admin = {
       });
     }
 
-    // HERO
     document.getElementById('heroFile')?.addEventListener('change', async (e)=>{
       const file = e.target.files[0]; if(!file) return;
       try {
@@ -173,11 +171,16 @@ export const Admin = {
       const res = await fetch(`${WORKER_URL}/api/menu`);
       const items = await res.json();
       if(!items.length){ grid.innerHTML = '<div style="padding:20px;color:var(--text-muted);border:2px dashed var(--border);border-radius:12px;text-align:center">No LIVE D1 items — use BULK INJECTOR above</div>'; return; }
+      // Store for edit
+      window._kovaLive = items;
       grid.innerHTML = items.map(d=>`
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden">
-          <div style="position:relative"><img src="${d.image}" style="width:100%;height:160px;object-fit:cover"><span style="position:absolute;top:8px;left:8px;background:#D6FF00;color:#000;font-size:9px;font-weight:900;padding:3px 8px;border-radius:99px">LIVE R2</span></div>
+          <div style="position:relative"><img src="${d.image}" style="width:100%;height:160px;object-fit:cover"><span style="position:absolute;top:8px;left:8px;background:var(--accent);color:#000;font-size:9px;font-weight:900;padding:3px 8px;border-radius:99px">LIVE R2</span><span style="position:absolute;top:8px;right:8px;background:var(--accent-2);color:#fff;font-size:9px;font-weight:900;padding:3px 8px;border-radius:99px">${d.category||'Flame'}</span></div>
           <div style="padding:12px"><b>${d.name}</b><br><span style="font-size:12px;color:var(--text-muted)">AED ${d.price} • ${d.category}</span>
-            <div style="display:flex;gap:6px;margin-top:8px"><button onclick="window.delLive('${d.id}')" style="flex:1;padding:6px;border-radius:8px;background:#ff2d2d;color:#fff;border:none;cursor:pointer;font-size:11px">Del D1</button></div>
+            <div style="display:flex;gap:6px;margin-top:10px">
+              <button onclick="window.editLive('${d.id}')" style="flex:1;padding:8px;border-radius:8px;background:var(--text-main);color:var(--bg-app);border:none;cursor:pointer;font-size:12px;font-weight:700">✏️ Edit</button>
+              <button onclick="window.delLive('${d.id}')" style="flex:1;padding:8px;border-radius:8px;background:var(--accent-2);color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:700">Del</button>
+            </div>
           </div>
         </div>
       `).join('');
@@ -186,7 +189,11 @@ export const Admin = {
         await fetch(`${WORKER_URL}/api/admin/menu/${id}`, {method:'DELETE'});
         this.loadLiveMenu();
       };
-    }catch(e){ grid.innerHTML = `<div style="color:red;padding:12px">D1 load failed: ${e.message}</div>`; }
+      window.editLive = (id)=>{
+        const item = window._kovaLive.find(x=>x.id===id);
+        if(item) this.openModal('menu', item);
+      };
+    }catch(e){ grid.innerHTML = `<div style="color:var(--accent-2);padding:12px">D1 load failed: ${e.message}</div>`; }
   },
 
   openModal(type, data=null){
@@ -196,21 +203,23 @@ export const Admin = {
     if(type==='menu'){
       box.innerHTML=`
         <div style="padding:20px">
-          <h3 style="font-weight:900;margin-bottom:12px">${data?'Edit':'Add'} Dish — CLOUD R2</h3>
+          <h3 style="font-weight:900;margin-bottom:12px">${data?'✏️ Edit':'Add'} Dish — CLOUD R2 ${data?`<span style="color:var(--accent-2);font-size:12px">#${data.id}</span>`:''}</h3>
           <div style="display:flex;flex-direction:column;gap:10px">
-            <select id="f_cat" style="padding:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #333">
+            ${data?.image?`<img src="${data.image}" style="width:100%;height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--border)">`:''}
+            <select id="f_cat" style="padding:12px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)">
               <option>Flame</option><option>Smoke</option><option>Stone</option><option>Raw & Cold</option><option>Sweets</option><option>Drinks</option>
             </select>
-            <input id="f_name" value="${data?.name||''}" placeholder="Name EN" style="padding:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #333">
-            <input id="f_ar" value="${data?.name_ar||''}" placeholder="Name AR" style="padding:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #333">
+            <input id="f_name" value="${data?.name||''}" placeholder="Name EN" style="padding:12px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)">
+            <input id="f_ar" value="${data?.name_ar||''}" placeholder="Name AR" style="padding:12px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <input id="f_price" value="${data?.price||''}" placeholder="Price" type="number" style="padding:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #333">
-              <input id="f_badge" value="${data?.badge||''}" placeholder="Badge" style="padding:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #333">
+              <input id="f_price" value="${data?.price||''}" placeholder="Price" type="number" style="padding:12px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)">
+              <input id="f_badge" value="${data?.badge||''}" placeholder="Badge (Chef's Pick, HOT, RAW)" style="padding:12px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)">
             </div>
-            <textarea id="f_desc" placeholder="Description" style="padding:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #333;min-height:70px">${data?.description||''}</textarea>
-            <input id="f_img" type="file" accept="image/*">
-            <div id="uploadStatus" style="font-size:11px;color:#D6FF00;display:none">Uploading to R2...</div>
-            <div style="display:flex;gap:8px;margin-top:10px"><button id="saveDish" style="flex:1;padding:12px;background:#D6FF00;color:#000;border:none;border-radius:99px;font-weight:900;cursor:pointer">SAVE TO CLOUD R2</button><button id="closeM" style="flex:1;padding:12px;background:#222;color:#fff;border:none;border-radius:99px;cursor:pointer">Cancel</button></div>
+            <textarea id="f_desc" placeholder="Description" style="padding:12px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border);min-height:70px">${data?.description||''}</textarea>
+            <label style="font-size:12px;color:var(--text-muted)">Replace Image (optional, uploads to R2):</label>
+            <input id="f_img" type="file" accept="image/*" style="color:var(--text-main)">
+            <div id="uploadStatus" style="font-size:11px;color:var(--accent);display:none">Uploading to R2...</div>
+            <div style="display:flex;gap:8px;margin-top:10px"><button id="saveDish" style="flex:1;padding:12px;background:var(--accent);color:#000;border:none;border-radius:99px;font-weight:900;cursor:pointer">${data?'UPDATE CLOUD':'SAVE TO CLOUD R2'}</button><button id="closeM" style="flex:1;padding:12px;background:var(--bg-hover);color:var(--text-main);border:1px solid var(--border);border-radius:99px;cursor:pointer">Cancel</button></div>
           </div>
         </div>`;
       box.querySelector('#f_cat').value=data?.category||'Flame';
@@ -236,13 +245,13 @@ export const Admin = {
           modal.style.display='none'; this.loadLiveMenu();
         } catch(err){
           alert('Cloud save failed: ' + err.message);
-          saveBtn.disabled = false; saveBtn.textContent='SAVE TO CLOUD R2'; status.style.display='none';
+          saveBtn.disabled = false; saveBtn.textContent=data?'UPDATE CLOUD':'SAVE TO CLOUD R2'; status.style.display='none';
         }
       };
       box.querySelector('#closeM').onclick=()=>modal.style.display='none';
     }
     if(type==='staff'){
-      box.innerHTML=`<div style="padding:20px"><h3 style="font-weight:900">Add Staff</h3><input id="s_n" placeholder="Name" style="width:100%;padding:12px;margin-top:12px;border-radius:10px;background:#000;color:#fff;border:1px solid #333"><select id="s_r" style="width:100%;padding:12px;margin-top:8px;border-radius:10px;background:#000;color:#fff;border:1px solid #333"><option>Chef</option><option>Grill Master</option><option>Server</option><option>Manager</option></select><select id="s_sh" style="width:100%;padding:12px;margin-top:8px;border-radius:10px;background:#000;color:#fff;border:1px solid #333"><option>Morning</option><option>Evening</option><option>Full</option></select><div style="display:flex;gap:8px;margin-top:12px"><button id="s_save" style="flex:1;padding:12px;background:#D6FF00;color:#000;border:none;border-radius:99px;font-weight:900;cursor:pointer">SAVE</button><button id="closeM" style="flex:1;padding:12px;background:#222;color:#fff;border:none;border-radius:99px">Cancel</button></div></div>`;
+      box.innerHTML=`<div style="padding:20px"><h3 style="font-weight:900">Add Staff</h3><input id="s_n" placeholder="Name" style="width:100%;padding:12px;margin-top:12px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)"><select id="s_r" style="width:100%;padding:12px;margin-top:8px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)"><option>Chef</option><option>Grill Master</option><option>Server</option><option>Manager</option></select><select id="s_sh" style="width:100%;padding:12px;margin-top:8px;border-radius:10px;background:var(--bg-app);color:var(--text-main);border:1px solid var(--border)"><option>Morning</option><option>Evening</option><option>Full</option></select><div style="display:flex;gap:8px;margin-top:12px"><button id="s_save" style="flex:1;padding:12px;background:var(--accent);color:#000;border:none;border-radius:99px;font-weight:900;cursor:pointer">SAVE</button><button id="closeM" style="flex:1;padding:12px;background:var(--bg-hover);color:var(--text-main);border:1px solid var(--border);border-radius:99px">Cancel</button></div></div>`;
       box.querySelector('#s_save').onclick=async ()=>{
         const s=JSON.parse(localStorage.getItem('kova_staff')||'[]');
         const newStaff={id:Date.now().toString(),name:box.querySelector('#s_n').value,role:box.querySelector('#s_r').value,shift:box.querySelector('#s_sh').value};

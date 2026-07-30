@@ -16,6 +16,9 @@ export const Menu = {
 
   async render() {
     try {
+      const savedFilter = sessionStorage.getItem('kova_filter');
+if(savedFilter){ setTimeout(()=>{ sessionStorage.removeItem('kova_filter'); window.filterBy && window.filterBy(savedFilter); document.querySelector(`[data-filter="${savedFilter}"]`)?.click(); }, 300); }
+
       const res = await fetch(`${API_BASE}/api/menu`);
       const live = await res.json();
       if (Array.isArray(live) && live.length > 0) {
