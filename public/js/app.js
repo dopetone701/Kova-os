@@ -2,7 +2,6 @@
 import { Sidebar } from './components/Sidebar.js';
 import { Topbar } from './components/Topbar.js';
 import { Router } from './router/index.js';
-import { Story } from './views/Story.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('KOVA OS Booting... Backend: kova-main-api | D1 | KOVA-R2');
