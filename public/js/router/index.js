@@ -92,4 +92,4 @@ window.navigate = (path) => {
     history.pushState({}, '', '/' + clean);
     Router.resolve();
   }
-};q
+};
