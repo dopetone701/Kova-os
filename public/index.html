@@ -6,17 +6,7 @@
   <title>KOVA | كوفا — Flame Kitchen OS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
-  <script>
-    // Auto-detect base: /public for local file, / for live
-    (function(){
-      const isPublicPath = window.location.pathname.includes('/public/');
-      window.__BASE__ = isPublicPath ? '/public' : '';
-      const l = document.createElement('link');
-      l.rel = 'stylesheet';
-      l.href = window.__BASE__ + '/css/app.css';
-      document.head.appendChild(l);
-    })();
-  </script>
+  <link rel="stylesheet" href="/css/app.css" />
 </head>
 <body class="app-shell">
   <aside id="sidebar" class="sidebar"></aside>
@@ -24,9 +14,6 @@
     <header id="topbar" class="topbar"></header>
     <main id="app" class="app-view"><div class="loading">Loading KOVA OS...</div></main>
   </div>
-  <script type="module">
-    const base = window.__BASE__ || '';
-    import(base + '/js/app.js');
-  </script>
+  <script type="module" src="/js/app.js"></script>
 </body>
 </html>
