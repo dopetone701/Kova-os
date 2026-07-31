@@ -5,14 +5,12 @@ import { Router } from './router/index.js';
 
 const GUEST_WORKER = 'https://kova-guest-sign-up.dopetone701.workers.dev';
 
-document.addEventListener('DOMContentLoaded', () => {
+function bootKOVA(){
   console.log('KOVA OS Booting... Backend: kova-main-api | D1 | KOVA-R2 | Guest Auth D1+R2');
- 
   Sidebar.render();
   Topbar.render();
   Router.init();
-
-  // Theme - noir default
+  // ... keep all the rest of your code inside here ...
   window.toggleTheme = () => {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
@@ -22,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const saved = localStorage.getItem('kova-theme');
   if (saved) document.documentElement.setAttribute('data-theme', saved);
-
-  // Admin check locked - now also checks D1 guest is_admin
   window.checkAdminAccess = async () => {
     const allowedEmails = ['owner@kova.ae', 'dopetone701@gmail.com'];
     try{
@@ -45,8 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   };
   checkAdminAccess();
-
-  // Guest global helpers - D1 persistent cart/wish never lost
   window.kovaLogout = () => {
     localStorage.removeItem('kova_token');
     localStorage.removeItem('kova_guest');
@@ -62,8 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
     try{ return JSON.parse(localStorage.getItem('kova_guest')||'null'); }catch{ return null; }
   };
   window.kovaIsAdmin = () => localStorage.getItem('kova_is_admin')==='1';
-
-  // Create dark overlay once - mobile
   let overlay = document.getElementById('sidebar-overlay');
   if(!overlay){
     overlay = document.createElement('div');
@@ -71,9 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;display:none;opacity:0;transition:opacity .2s';
     document.body.appendChild(overlay);
   }
-
   const getSb = () => document.getElementById('sidebar');
-
   window.closeSidebar = () => {
     const sb = getSb();
     if(!sb) return;
@@ -113,19 +103,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   };
-
   overlay.onclick = () => window.closeSidebar();
-
-  // Force hidden on mobile refresh - no auto open
   if(window.innerWidth <= 768){
     getSb()?.classList.remove('open');
     overlay.classList.remove('show');
     overlay.style.display='none';
     document.body.classList.remove('sb-open');
   }
-
-  // On hash change, close mobile sidebar
   window.addEventListener('hashchange', ()=>{
     if(window.innerWidth <= 768) window.closeSidebar();
   });
-});
+}
+
+// THIS IS THE FIX - runs even if DOM already loaded
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', bootKOVA);
+} else {
+  bootKOVA();
+}
