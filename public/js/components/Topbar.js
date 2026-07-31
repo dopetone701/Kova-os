@@ -1,7 +1,14 @@
+// KOVA Topbar - SEARCH + D1 CART/WISH PERSISTENT + GUEST AUTH SAFE
 export const Topbar = {
+  GUEST_WORKER: 'https://kova-guest-sign-up.dopetone701.workers.dev',
   render() {
     const el = document.getElementById('topbar');
     if(!el) return;
+
+    const token = localStorage.getItem('kova_token');
+    let guest = null;
+    try{ guest = JSON.parse(localStorage.getItem('kova_guest')||'null'); }catch{}
+
     el.innerHTML = `
       <style>
         #topbar{
@@ -93,7 +100,9 @@ export const Topbar = {
           font-weight:900; flex-shrink:0;
           position:relative;
           border:2px solid var(--border);
+          overflow:hidden;
         }
+        #topbar .k-avatar img{width:100%;height:100%;object-fit:cover}
         [data-theme="light"] #topbar .k-avatar{
           background:#121214; color:#fff;
         }
@@ -128,13 +137,26 @@ export const Topbar = {
           background:var(--accent);
           color:#000;
         }
+        #topbar .guest-pill{
+          display:flex;gap:8px;align-items:center;
+          background:var(--bg-card);border:1px solid var(--border);
+          padding:4px 10px 4px 4px;border-radius:999px;
+          cursor:pointer;transition:.2s;flex-shrink:0;
+        }
+        #topbar .guest-pill:hover{border-color:var(--text-muted)}
+        #topbar .guest-pill img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-app)}
+        #topbar .auth-btn{
+          background:var(--accent);color:#000;border:0;
+          padding:10px 18px;border-radius:999px;
+          font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;transition:.2s
+        }
+        #topbar .auth-btn:hover{background:var(--accent-2);color:#fff}
         @media(max-width:768px){
           #topbar{padding:0 12px;gap:8px}
           #topbar .search-box{max-width:none;flex:1}
           #topbar .btn-primary{display:none}
+          #topbar .guest-pill span{max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         }
-
-        
       </style>
 
       <button class="btn-icon" onclick="window.toggleSidebar && window.toggleSidebar()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
@@ -142,7 +164,7 @@ export const Topbar = {
       </button>
 
       <div class="search-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Search dishes, staff, orders..." id="globalSearch" autocomplete="off" />
         <button id="clearSearch" style="display:none; background:none; border:none; cursor:pointer; color:var(--text-muted);">✕</button>
       </div>
@@ -161,8 +183,17 @@ export const Topbar = {
         <button class="btn-icon" onclick="window.toggleTheme && window.toggleTheme()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         </button>
-        <button class="btn-primary" onclick="window.location.hash='#book'">Book Table</button>
-        <div class="k-avatar">K</div>
+
+        ${guest? `
+          <div class="guest-pill" onclick="location.hash='#/orders'" title="${guest.name} • My Orders (D1 synced)">
+            ${guest.photo_url? `<img src="${guest.photo_url.startsWith('/api/')? `${this.GUEST_WORKER}${guest.photo_url}` : guest.photo_url}" onerror="this.style.display='none'" />` : `<div style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#000;display:grid;place-items:center;font-weight:900;font-size:12px">${(guest.name||'G').charAt(0).toUpperCase()}</div>`}
+            <span style="font-size:12px;font-weight:700;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${guest.name.split(' ')[0]}</span>
+          </div>
+        ` : `
+          <button class="auth-btn" onclick="location.hash='#/auth'">Sign In</button>
+          <button class="btn-primary" onclick="window.location.hash='#book'" style="display:none">Book Table</button>
+          <div class="k-avatar">K</div>
+        `}
       </div>
     `;
 
@@ -173,14 +204,31 @@ export const Topbar = {
     const savedQ = sessionStorage.getItem('kova-search');
     if(savedQ) input.value = savedQ;
 
-    // ---- WISH + CART COUNTS ----
+    // ---- WISH + CART COUNTS - D1 FIRST, LOCAL FALLBACK ----
     const wishBtn = el.querySelector('#topbar-wish');
     const cartBtn = el.querySelector('#topbar-cart');
     const wishCountEl = el.querySelector('#topbar-wish-count');
     const cartCountEl = el.querySelector('#topbar-cart-count');
 
-    const refreshCounts = () => {
+    const refreshCounts = async () => {
       try{
+        const tok = localStorage.getItem('kova_token');
+        if(tok){
+          try{
+            const r = await fetch(`${this.GUEST_WORKER}/api/guest/me`, {headers:{'Authorization':`Bearer ${tok}`}});
+            if(r.ok){
+              const d = await r.json();
+              const cCart = (d.cart||[]).reduce((s,i)=>s+(i.qty||1),0);
+              const cWish = (d.wishlist||[]).length;
+              if(wishCountEl){ wishCountEl.textContent=cWish; wishCountEl.style.display=cWish>0?'grid':'none'; }
+              if(cartCountEl){ cartCountEl.textContent=cCart; cartCountEl.style.display=cCart>0?'grid':'none'; }
+              if(wishBtn){ if(cWish>0) wishBtn.classList.add('wish-active'); else wishBtn.classList.remove('wish-active'); }
+              if(cartBtn){ if(cCart>0) cartBtn.classList.add('cart-active'); else cartBtn.classList.remove('cart-active'); }
+              return;
+            }
+          }catch(e){ /* fallback to local */ }
+        }
+
         const wish = JSON.parse(localStorage.getItem('kova_wish')||'[]');
         const cart = JSON.parse(localStorage.getItem('kova_cart')||'[]');
         const wCount = wish.length;
@@ -209,8 +257,6 @@ export const Topbar = {
     window.addEventListener('kova:wishlist', refreshCounts);
     window.addEventListener('kova:cart', refreshCounts);
     window.addEventListener('storage', refreshCounts);
-    // custom events from Menu
-    window.addEventListener('kova:wishlist', refreshCounts);
 
     wishBtn?.addEventListener('click', ()=>{
       const wish = JSON.parse(localStorage.getItem('kova_wish')||'[]');
@@ -220,27 +266,13 @@ export const Topbar = {
         setTimeout(()=> input.placeholder = 'Search dishes, staff, orders...', 2000);
         return;
       }
-      // go to menu and show only wishlist
-      if(!location.pathname.includes('/menu')){
-        history.pushState(null,'','/menu?filter=Wishlist');
-        window.dispatchEvent(new PopStateEvent('popstate'));
-      }
+      // hash mode for Live Server
+      location.hash='#/menu?filter=Wishlist';
       window.dispatchEvent(new CustomEvent('kova:show-wishlist'));
     });
 
     cartBtn?.addEventListener('click', ()=>{
-      const cart = JSON.parse(localStorage.getItem('kova_cart')||'[]');
-      if(cart.length===0){
-        // go to menu
-        if(!location.pathname.includes('/menu')){
-          history.pushState(null,'','/menu');
-          window.dispatchEvent(new PopStateEvent('popstate'));
-        }
-        return;
-      }
-      history.pushState(null,'','/orders');
-      window.dispatchEvent(new PopStateEvent('popstate'));
-      window.dispatchEvent(new CustomEvent('kova:navigated'));
+      location.hash='#/orders';
     });
 
     const doSearch = () => {
@@ -257,13 +289,11 @@ export const Topbar = {
         return;
       }
 
-      // dispatch global search for Menu to pick up
       window.dispatchEvent(new CustomEvent('kova:search', {detail: q}));
 
-      const isMenu = document.querySelector('.menu-grid') || document.querySelector('.grid') || location.pathname.includes('menu');
+      const isMenu = document.querySelector('.menu-grid') || document.querySelector('.grid') || location.hash.includes('menu');
       if(!isMenu){
-        const menuLink = document.querySelector('[data-view="menu"]');
-        if(menuLink) menuLink.click();
+        location.hash='#/menu';
         setTimeout(() => filterCards(q), 400);
       } else {
         filterCards(q);
@@ -328,7 +358,7 @@ export const Topbar = {
       input.focus();
     });
 
-    if(savedQ && (document.querySelector('.grid') || document.querySelector('.menu-grid') || location.pathname.includes('menu'))){
+    if(savedQ && (document.querySelector('.grid') || document.querySelector('.menu-grid') || location.hash.includes('menu'))){
       setTimeout(() => filterCards(savedQ.toLowerCase()), 500);
     }
 

@@ -1,4 +1,4 @@
-// KOVA - Our Story View - FLAME SMOKE STONE - LOCKED COLORS BALANCED - MOBILE LOCKED CENTER UNDRAGABLE VERTICAL ONLY
+// KOVA - Our Story View - FLAME SMOKE STONE - LOCKED COLORS BALANCED - MOBILE LOCKED CENTER UNDRAGABLE VERTICAL ONLY + KOVA LOGO AS HOME + D1 SAFE
 export const Story = {
   async render() {
     return `
@@ -34,6 +34,24 @@ export const Story = {
         .story-card.flame{ border-left:3px solid var(--accent-2); }
         .story-card.smoke{ border-left:3px solid var(--text-muted); }
         .story-card.stone{ border-left:3px solid var(--text-main); }
+
+        /* KOVA LOGO - SAME AS HOME - SINGLE LOGO */
+        .mobile-kova{display:none}
+        .pc-kova-closed{
+          display:none;
+          position:absolute;
+          top:32px;
+          left:50%;
+          transform:translateX(-50%);
+          z-index:5;
+          text-align:center;
+          flex-direction:column;
+          align-items:center;
+        }
+        .pc-kova-closed .logo{font-family:'Syne',sans-serif;font-weight:900;font-size:52px;letter-spacing:-2px;line-height:1;color:#fff}
+        .pc-kova-closed .logo .o-green{color:var(--accent) !important}
+        .pc-kova-closed .sub{font-size:12px;font-weight:500;margin-top:8px;letter-spacing:0.5px;color:rgba(255,255,255,0.7);white-space:nowrap}
+        body.sidebar-collapsed .pc-kova-closed{display:flex !important}
 
         @media (max-width: 768px) {
           html, body {
@@ -107,6 +125,16 @@ export const Story = {
           }
           .story-stats div{ min-width:70px; }
           .story-card{width:100% !important;max-width:100% !important;box-sizing:border-box !important;min-width:0 !important}
+          /* MOBILE KOVA LOGO ONLY - SINGLE */
+          .mobile-kova{
+            display:flex !important; flex-direction:column; align-items:center; justify-content:center;
+            position:absolute; top:32px; left:50%; transform:translateX(-50%); z-index:5; text-align:center;
+          }
+          .mobile-kova .logo{font-family:'Syne',sans-serif;font-weight:900;font-size:38px;letter-spacing:-1.5px;line-height:1;color:#fff}
+          .mobile-kova .logo .o-green{color:var(--accent) !important}
+          .mobile-kova .sub{font-size:11px;font-weight:500;margin-top:6px;letter-spacing:0.5px;color:rgba(255,255,255,0.75);white-space:nowrap}
+          .pc-kova-closed{display:none !important}
+          body.sidebar-collapsed .pc-kova-closed{display:none !important}
         }
       </style>
 
@@ -123,7 +151,17 @@ export const Story = {
           box-sizing:border-box;
           border-radius:0 0 16px 16px;
         ">
-          <div style="max-width:800px;width:100%">
+          <!-- KOVA LOGO AS HOME - SINGLE LOGO ONLY -->
+          <div class="mobile-kova">
+            <div class="logo">K<span class="o-green">O</span>VA</div>
+            <div class="sub ar">كوفا — مطبخ الجمر &nbsp;•&nbsp; LIVE FIRE • JLT</div>
+          </div>
+          <div class="pc-kova-closed">
+            <div class="logo">K<span class="o-green">O</span>VA</div>
+            <div class="sub ar">كوفا — مطبخ الجمر • LIVE FIRE • JLT</div>
+          </div>
+
+          <div style="max-width:800px;width:100%;position:relative;z-index:2">
             <span style="color:var(--accent-2);font-weight:800;letter-spacing:4px;font-size:12px;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;background:var(--accent-2);border-radius:50%;display:inline-block;box-shadow:0 0 8px var(--accent-2)"></span> EST. DUBAI 2024</span>
             <h1 style="font-size:clamp(40px, 7vw, 84px);font-weight:900;letter-spacing:-3px;line-height:0.9;color:#fff;margin-top:12px;margin-bottom:0">
               WE DIDN'T<br>OPEN A RESTAURANT.<br><span style="color:var(--accent)">WE LIT A</span> <span style="color:var(--accent-2)">FIRE.</span>
@@ -172,7 +210,7 @@ export const Story = {
   },
 
   afterRender(){
-    // HARD LOCK HORIZONTAL DRAG - VERTICAL ONLY
+    // HARD LOCK HORIZONTAL DRAG - VERTICAL ONLY - D1 SAFE
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
     document.body.style.maxWidth = '100vw';

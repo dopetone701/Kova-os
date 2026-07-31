@@ -1,5 +1,6 @@
-// KOVA Home — CENTER LOGO MOBILE + BIG WHITE + LOCKED - FIXED O LEMON GREEN + PC HERO LOGO WHEN SIDEBAR CLOSED
+// KOVA Home — CENTER LOGO MOBILE + BIG WHITE + LOCKED - FIXED O LEMON GREEN + PC HERO LOGO WHEN SIDEBAR CLOSED + GUEST D1 SAFE
 const API_BASE = "https://kova-clean-api.dopetone701.workers.dev";
+const GUEST_WORKER = "https://kova-guest-sign-up.dopetone701.workers.dev";
 
 export const Home = {
   async render() {
@@ -15,6 +16,15 @@ export const Home = {
     const pick = (filter, n=8) => menu.filter(i => (i.category||"").toLowerCase().includes(filter.toLowerCase())).slice(0,n);
     const trending = [...menu].sort(()=>0.5-Math.random()).slice(0,10);
     const flames = pick("flame", 6);
+
+    // Guest D1 safe - welcome back
+    let guest = null;
+    let cartCount = 0;
+    try{ 
+      guest = JSON.parse(localStorage.getItem('kova_guest')||'null');
+      const cart = JSON.parse(localStorage.getItem('kova_cart')||'[]');
+      cartCount = cart.reduce((s,i)=>s+(i.qty||1),0);
+    }catch{}
 
     return `
       <style>
@@ -72,6 +82,13 @@ export const Home = {
         .tr-side img{width:120px;min-width:120px;object-fit:cover}
         .tr-side-content{padding:16px;flex:1;display:flex;flex-direction:column;justify-content:center}
 
+        .guest-welcome{
+          background:rgba(10,10,11,0.8);backdrop-filter:blur(12px);border:1px solid rgba(200,255,0,0.2);
+          border-radius:999px;padding:8px 16px;display:inline-flex;gap:10px;align-items:center;
+          font-size:12px;color:#fff;margin-bottom:16px
+        }
+        .guest-welcome .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent)}
+
         @media(max-width:768px){
           .kova-home-root{margin:0 !important;margin-left:-16px !important;margin-right:-16px !important;width:calc(100% + 32px) !important;min-width:calc(100% + 32px) !important;max-width:calc(100% + 32px) !important;overflow-x:hidden !important}
           .kova-inner{padding-left:20px !important;padding-right:20px !important}
@@ -112,12 +129,23 @@ export const Home = {
               <span style="background:var(--accent);color:#000 !important;font-size:11px;font-weight:800;padding:6px 12px;border-radius:999px">🔥 Wood Fired • 900°C Stone</span>
               <span style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);font-size:11px;padding:6px 12px;border-radius:999px;display:flex;align-items:center;gap:6px"><span class="live-dot"></span> JLT, Dubai • 4.9★ (1.2k)</span>
             </div>
+            ${guest? `
+              <div class="guest-welcome">
+                <span class="dot"></span>
+                <span>Welcome back, <b>${guest.name}</b> — D1 cart saved • ${cartCount} items • <a href="#/orders" style="color:var(--accent);text-decoration:none;font-weight:800">My Orders →</a></span>
+              </div>
+            ` : `
+              <div class="guest-welcome" style="background:rgba(255,255,255,0.08);border-color:var(--border)">
+                <span class="dot" style="background:var(--accent-2);box-shadow:0 0 8px var(--accent-2)"></span>
+                <span>Guest Mode — <a href="#/auth" style="color:var(--accent);text-decoration:none;font-weight:800">Sign in</a> to save cart across devices (D1 + R2)</span>
+              </div>
+            `}
             <h1 class="hero-title">You're in the<br>right place.</h1>
             <p class="hero-sub" style="color:#A1A1AA;max-width:600px;margin-top:18px;line-height:1.4">KOVA is fire, smoke & stone. 14-hour lamb, hand-pulled cheese breads, raw plates cured in yuzu. No shortcuts. Just flame.</p>
             <p class="ar" style="color:var(--accent);margin-top:10px;font-size:21px;font-weight:700">أهلاً بك في كوفا — حيث النار تلتقي بالحجر</p>
             <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
               <button onclick="window.kovaGoMenu('All')" class="btn-green-fix" style="background:var(--accent) !important;color:#000 !important;font-weight:900;padding:16px 32px;border-radius:999px;border:none;font-size:15px;cursor:pointer">Explore Full Menu — 250+ Dishes →</button>
-              <button style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);padding:16px 26px;border-radius:999px;font-size:14px"><span style="color:var(--accent-2)">●</span> Book Table • Tonight 94% Full</button>
+              <button onclick="location.hash='#/orders'" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);padding:16px 26px;border-radius:999px;font-size:14px;cursor:pointer"><span style="color:var(--accent-2)">●</span> ${guest? `My Orders • ${cartCount} in cart` : 'Book Table • Tonight 94% Full'}</button>
             </div>
           </div>
         </div>
@@ -142,32 +170,25 @@ export const Home = {
 
         <div class="flame-section"><div class="flame-header"><h3 class="theme-text" style="margin:0;font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px"><span class="live-dot"></span> Flame — Hot from Ember</h3><button onclick="window.kovaGoMenu('Flame')" class="theme-card theme-text" style="padding:8px 14px;border-radius:999px;font-size:12px;cursor:pointer">View All Flame →</button></div><div class="flame-row">${flames.map(it=>`<div onclick="window.kovaGoMenu('Flame')" class="flame-card"><img src="${it.image}" style="height:140px;width:100%;object-fit:cover;display:block;"><div style="padding:10px"><div class="theme-text" style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.name}</div><div style="font-size:11px;margin-top:2px;display:flex;gap:6px;align-items:center"><span class="theme-muted">${it.price} AED</span><span style="color:var(--accent-2)">• 🔥 HOT</span></div></div></div>`).join('')}</div></div>
 
-        <div class="kova-inner" style="padding-bottom:100px;padding-top:24px"><div class="grid-2 theme-strip" style="border-radius:16px;padding:28px;display:grid;grid-template-columns:1.2fr 1fr;gap:24px"><div><h3 class="theme-text" style="margin:0;font-size:20px;font-weight:900">Why guests love KOVA</h3><ul style="list-style:none;padding:0;margin:16px 0 0 0;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.4" class="theme-muted"><li>🔥 <b class="theme-text">Real fire, not gas:</b> Ghaf & oak wood, 800°C Hajar stone.</li><li>🥩 <b class="theme-text">No frozen meat:</b> Daily halal delivery, dry-aged in house.</li><li>🌿 <b class="theme-text">Diet = no compromise:</b> 80+ V, VG, GF dishes marked.</li></ul></div><div style="background:var(--bg-app);border:1px solid var(--border);border-radius:12px;padding:18px"><div style="color:var(--accent);font-size:11px;font-weight:800;letter-spacing:1px">GUEST REVIEWS</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:12px"><div class="theme-text" style="font-size:13px">“Best ribeye in Dubai.” <span class="theme-muted">— Ahmed ★★★★★</span></div><div class="theme-text" style="font-size:13px">“Finally vegan that’s not boring.” <span class="theme-muted">— Sarah</span></div></div></div></div></div>
+        <div class="kova-inner" style="padding-bottom:100px;padding-top:24px"><div class="grid-2 theme-strip" style="border-radius:16px;padding:28px;display:grid;grid-template-columns:1.2fr 1fr;gap:24px"><div><h3 class="theme-text" style="margin:0;font-size:20px;font-weight:900">Why guests love KOVA</h3><ul style="list-style:none;padding:0;margin:16px 0 0 0;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.4" class="theme-muted"><li>🔥 <b class="theme-text">Real fire, not gas:</b> Ghaf & oak wood, 800°C Hajar stone.</li><li>🥩 <b class="theme-text">No frozen meat:</b> Daily halal delivery, dry-aged in house.</li><li>🌿 <b class="theme-text">Diet = no compromise:</b> 80+ V, VG, GF dishes marked.</li><li>☁️ <b class="theme-text">D1 Synced:</b> Cart & wishlist saved across devices, never lost.</li></ul></div><div style="background:var(--bg-app);border:1px solid var(--border);border-radius:12px;padding:18px"><div style="color:var(--accent);font-size:11px;font-weight:800;letter-spacing:1px">GUEST REVIEWS • D1 SAFE</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:12px"><div class="theme-text" style="font-size:13px">“Best ribeye in Dubai.” <span class="theme-muted">— Ahmed ★★★★★</span></div><div class="theme-text" style="font-size:13px">“Finally vegan that’s not boring.” <span class="theme-muted">— Sarah</span></div><div class="theme-text" style="font-size:13px">“Cart saved even after I changed phone!” <span class="theme-muted">— ${guest? guest.name : 'Guest'}</span></div></div></div></div></div>
       </div>
     `;
   },
   afterRender(){
-    // global nav helper - app shell aware
+    // global nav helper - hash mode Live Server safe + D1
     window.kovaGoMenu = (filter)=>{
       sessionStorage.setItem('kova_filter', filter);
-      // use app shell router if available
+      location.hash = `#/menu?filter=${encodeURIComponent(filter)}`;
       if(window.navigateMenu) window.navigateMenu(filter);
-      else {
-        history.pushState(null,'','/menu?filter='+encodeURIComponent(filter));
-        window.dispatchEvent(new PopStateEvent('popstate'));
-        window.dispatchEvent(new CustomEvent('kova:navigated'));
-      }
     };
     // check sidebar state for PC logo
     const checkSidebar = ()=>{
       const sb = document.getElementById('sidebar');
       if(!sb) return;
-      const isCollapsed = sb.classList.contains('collapsed') || getComputedStyle(sb).transform.includes('-280') || sb.offsetWidth===0;
-      if(isCollapsed || window.innerWidth>900 && sb.classList.contains('collapsed')){
+      if(sb.classList.contains('collapsed')){
         document.body.classList.add('sidebar-collapsed');
       } else {
-        if(sb.classList.contains('collapsed')) document.body.classList.add('sidebar-collapsed');
-        else document.body.classList.remove('sidebar-collapsed');
+        document.body.classList.remove('sidebar-collapsed');
       }
     };
     setTimeout(checkSidebar, 100);

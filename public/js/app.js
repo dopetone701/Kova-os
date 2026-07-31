@@ -1,16 +1,18 @@
-// KOVA OS - APP BRAIN - LOCKED BACKEND: kova-main-api + D1 + KOVA-R2
+// KOVA OS - APP BRAIN - LOCKED BACKEND: kova-main-api + D1 + KOVA-R2 + GUEST AUTH D1 SAFE
 import { Sidebar } from './components/Sidebar.js';
 import { Topbar } from './components/Topbar.js';
 import { Router } from './router/index.js';
 
+const GUEST_WORKER = 'https://kova-guest-sign-up.dopetone701.workers.dev';
+
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('KOVA OS Booting... Backend: kova-main-api | D1 | KOVA-R2');
+  console.log('KOVA OS Booting... Backend: kova-main-api | D1 | KOVA-R2 | Guest Auth D1+R2');
  
   Sidebar.render();
   Topbar.render();
   Router.init();
 
-  // Theme
+  // Theme - noir default
   window.toggleTheme = () => {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
@@ -21,17 +23,52 @@ document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('kova-theme');
   if (saved) document.documentElement.setAttribute('data-theme', saved);
 
+  // Admin check locked - now also checks D1 guest is_admin
   window.checkAdminAccess = async () => {
-    const allowedEmails = ['owner@kova.ae'];
+    const allowedEmails = ['owner@kova.ae', 'dopetone701@gmail.com'];
+    try{
+      const token = localStorage.getItem('kova_token');
+      if(token){
+        const r = await fetch(`${GUEST_WORKER}/api/guest/me`, {headers:{'Authorization':`Bearer ${token}`}});
+        if(r.ok){
+          const d = await r.json();
+          if(d.guest && d.guest.is_admin){
+            console.log('Admin access granted via D1:', d.guest.email);
+            localStorage.setItem('kova_is_admin','1');
+            localStorage.setItem('kova_admin_email', d.guest.email);
+            return true;
+          }
+        }
+      }
+    }catch{}
     console.log('Admin check locked:', allowedEmails);
+    return false;
   };
   checkAdminAccess();
 
-  // Create dark overlay once
+  // Guest global helpers - D1 persistent cart/wish never lost
+  window.kovaLogout = () => {
+    localStorage.removeItem('kova_token');
+    localStorage.removeItem('kova_guest');
+    localStorage.removeItem('kova_is_admin');
+    location.hash='#/';
+    location.reload();
+  };
+  window.kovaGoMenu = (filter) => {
+    sessionStorage.setItem('kova_filter', filter);
+    location.hash = `#/menu?filter=${encodeURIComponent(filter)}`;
+  };
+  window.kovaGetGuest = () => {
+    try{ return JSON.parse(localStorage.getItem('kova_guest')||'null'); }catch{ return null; }
+  };
+  window.kovaIsAdmin = () => localStorage.getItem('kova_is_admin')==='1';
+
+  // Create dark overlay once - mobile
   let overlay = document.getElementById('sidebar-overlay');
   if(!overlay){
     overlay = document.createElement('div');
     overlay.id = 'sidebar-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;display:none;opacity:0;transition:opacity .2s';
     document.body.appendChild(overlay);
   }
 
@@ -42,7 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!sb) return;
     sb.classList.remove('open');
     overlay.classList.remove('show');
+    overlay.style.display='none';
+    overlay.style.opacity='0';
     document.body.classList.remove('sb-open');
+    document.body.classList.remove('sidebar-collapsed');
   };
   window.openSidebar = () => {
     const sb = getSb();
@@ -50,9 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if(window.innerWidth <= 768){
       sb.classList.add('open');
       overlay.classList.add('show');
+      overlay.style.display='block';
+      setTimeout(()=>overlay.style.opacity='1',10);
       document.body.classList.add('sb-open');
     } else {
       sb.classList.remove('collapsed');
+      document.body.classList.remove('sidebar-collapsed');
     }
   };
   window.toggleSidebar = () => {
@@ -63,14 +106,26 @@ document.addEventListener('DOMContentLoaded', () => {
       else window.openSidebar();
     } else {
       sb.classList.toggle('collapsed');
+      if(sb.classList.contains('collapsed')){
+        document.body.classList.add('sidebar-collapsed');
+      } else {
+        document.body.classList.remove('sidebar-collapsed');
+      }
     }
   };
 
   overlay.onclick = () => window.closeSidebar();
 
-  // Force hidden on mobile refresh
+  // Force hidden on mobile refresh - no auto open
   if(window.innerWidth <= 768){
     getSb()?.classList.remove('open');
     overlay.classList.remove('show');
+    overlay.style.display='none';
+    document.body.classList.remove('sb-open');
   }
+
+  // On hash change, close mobile sidebar
+  window.addEventListener('hashchange', ()=>{
+    if(window.innerWidth <= 768) window.closeSidebar();
+  });
 });

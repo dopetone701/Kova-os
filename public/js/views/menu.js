@@ -1,5 +1,6 @@
-// KOVA Menu - MOBILE LOCKED - NO SIDE DRAG - HEART ON CARDS ONLY - STICKY PILL BAR DOCKED TO NAV
+// KOVA Menu - MOBILE LOCKED - NO SIDE DRAG - HEART ON CARDS ONLY - STICKY PILL BAR DOCKED TO NAV + D1 GUEST AUTH SAFE
 const API_BASE = "https://kova-clean-api.dopetone701.workers.dev";
+const GUEST_WORKER = "https://kova-guest-sign-up.dopetone701.workers.dev";
 
 export const Menu = {
   dishes: [],
@@ -28,11 +29,33 @@ export const Menu = {
       } else this.dishes = [...this.menuData];
     } catch(e){ this.dishes = [...this.menuData]; }
 
+    // D1 SAFE - if guest logged in, load his cart/wish from D1 so it never gets lost across devices
+    const token = localStorage.getItem('kova_token');
+    if(token){
+      try{
+        const r = await fetch(`${GUEST_WORKER}/api/guest/me`, {headers:{'Authorization':`Bearer ${token}`}});
+        if(r.ok){
+          const d = await r.json();
+          if(d.cart && Array.isArray(d.cart)){
+            this.cart = d.cart.map(c=>({id:c.item_id, title:c.title, price:c.price, image:c.image, qty:c.qty}));
+            localStorage.setItem('kova_cart', JSON.stringify(this.cart));
+          }
+          if(d.wishlist && Array.isArray(d.wishlist)){
+            this.wishlist = d.wishlist.map(w=>({id:w.item_id, title:w.title, price:w.price, image:w.image, ar:'', desc:''}));
+            localStorage.setItem('kova_wish', JSON.stringify(this.wishlist));
+          }
+        }
+      }catch(e){ /* keep local fallback */ }
+    }
+
     const urlParams = new URLSearchParams(location.search);
-    const urlFilter = urlParams.get('filter');
+    const urlFilter = urlParams.get('filter') || new URLSearchParams(location.hash.split('?')[1]||'').get('filter');
     const savedFilter = sessionStorage.getItem('kova_filter');
     if(urlFilter) this.activeFilter = urlFilter;
     else if(savedFilter) this.activeFilter = savedFilter;
+
+    const cartCount = this.cart.reduce((s,i)=>s+(i.qty||1),0);
+    const cartTotal = this.cart.reduce((s,i)=>s + (parseFloat(i.price)||0)*(i.qty||1),0);
 
     return `
       <style>
@@ -51,6 +74,8 @@ export const Menu = {
         justify-content:space-between;
         align-items:center;
         box-sizing:border-box;
+        flex-wrap:wrap;
+        gap:10px;
       }
       /* STICKY PILL BAR - DOCKED TO NAV */
       .filter-bar{
@@ -95,6 +120,7 @@ export const Menu = {
       .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:18px;width:100%;box-sizing:border-box}
       .k-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:.2s;position:relative;min-width:0;max-width:100%;box-sizing:border-box}
       .k-card:hover{border-color:#3a3a3e;transform:translateY(-2px)}
+      .cart-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text-main);color:var(--bg-app);padding:12px 20px;border-radius:999px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,0.4);z-index:60;max-width:90vw}
 
       @media(max-width:768px){
         html, body { overflow-x:hidden!important; max-width:100vw!important; }
@@ -134,7 +160,11 @@ export const Menu = {
         <div class="menu-head">
           <div style="min-width:0">
             <h2 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Menu <span style="font-size:11px;color:var(--text-muted);font-weight:500">— ${this.dishes.length}</span></h2>
-            <p style="color:var(--text-muted);font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Filter: ${this.activeFilter} • Sticky docked to nav</p>
+            <p style="color:var(--text-muted);font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Filter: ${this.activeFilter} • ${token?'☁️ D1 Synced':'📱 Local'} • Sticky docked to nav</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button id="viewCartBtn" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);padding:8px 14px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer">🛒 ${cartCount} • AED ${cartTotal.toFixed(0)}</button>
+            <button id="checkoutBtn" style="background:var(--accent);color:#000;border:0;padding:8px 16px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;display:${cartCount?'inline-block':'none'}">Checkout → Orders (D1)</button>
           </div>
         </div>
 
@@ -147,6 +177,12 @@ export const Menu = {
 
         <div id="menuGrid" class="menu-grid"></div>
         <div id="sentinel" style="height:40px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:11px;margin-top:10px">Loading ember...</div>
+
+        <div id="cartBar" class="cart-bar" style="display:${cartCount?'flex':'none'}">
+          <span style="font-weight:800;font-size:13px">🛒 ${cartCount} • AED ${cartTotal.toFixed(0)} • ${token?'D1 Saved':'Local'}</span>
+          <button onclick="document.getElementById('checkoutBtn')?.click()" style="background:#C8FF00;color:#000;border:0;padding:8px 16px;border-radius:999px;font-weight:800;font-size:12px;cursor:pointer">Checkout</button>
+          <button onclick="location.hash='#/orders'" style="background:#fff;color:#000;border:0;padding:8px 16px;border-radius:999px;font-weight:800;font-size:12px;cursor:pointer">My Orders</button>
+        </div>
       </div>
     `;
   },
@@ -155,21 +191,55 @@ export const Menu = {
     const grid = document.getElementById('menuGrid');
     if(!grid) return;
 
+    const token = localStorage.getItem('kova_token');
+
+    // D1 API helpers - safe, no break if offline
+    const d1 = {
+      async cartAdd(item){
+        if(!token) return;
+        try{
+          await fetch(`${GUEST_WORKER}/api/guest/cart/add`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({item_id: String(item.id), title: item.title, price: String(item.price), image: item.image||'', qty: item.qty||1})});
+        }catch(e){ console.warn('D1 cart add failed', e); }
+      },
+      async cartRemove(item_id){
+        if(!token) return;
+        try{ await fetch(`${GUEST_WORKER}/api/guest/cart/remove`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({item_id: String(item_id)})}); }catch{}
+      },
+      async wishToggle(item){
+        if(!token) return;
+        try{ await fetch(`${GUEST_WORKER}/api/guest/wishlist/toggle`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({item_id: String(item.id), title: item.title, price: String(item.price), image: item.image||''})}); }catch{}
+      },
+      async createOrder(){
+        if(!token){ alert('Sign in to create order that never gets lost — D1 saves it forever'); location.hash='#/auth'; return null; }
+        try{
+          const r = await fetch(`${GUEST_WORKER}/api/guest/orders/create`, {method:'POST', headers:{'Authorization':`Bearer ${token}`}});
+          const d = await r.json();
+          if(!r.ok) throw new Error(d.error||'Failed');
+          return d.order;
+        }catch(e){ alert('Order failed: '+e.message); return null; }
+      }
+    };
+
     const updateTopbarWishlist = () => {
       const count = this.wishlist.length;
       localStorage.setItem('kova_wish', JSON.stringify(this.wishlist));
-      const topWish = document.getElementById('topbar-wish-count');
-      if(topWish) topWish.textContent = count;
-      const topWishBtn = document.getElementById('topbar-wish');
-      if(topWishBtn) topWishBtn.style.display = 'flex';
       window.dispatchEvent(new CustomEvent('kova:wishlist', {detail: count}));
     };
 
     const updateTopbarCart = () => {
       localStorage.setItem('kova_cart', JSON.stringify(this.cart));
       const count = this.cart.reduce((s,i)=>s+(i.qty||1),0);
-      const topCart = document.getElementById('topbar-cart-count');
-      if(topCart) topCart.textContent = count;
+      const total = this.cart.reduce((s,i)=>s + (parseFloat(i.price)||0)*(i.qty||1),0);
+      const viewBtn = document.getElementById('viewCartBtn');
+      const cartBar = document.getElementById('cartBar');
+      const checkoutBtn = document.getElementById('checkoutBtn');
+      if(viewBtn) viewBtn.textContent = `🛒 ${count} • AED ${total.toFixed(0)}`;
+      if(cartBar){
+        cartBar.style.display = count?'flex':'none';
+        const span = cartBar.querySelector('span');
+        if(span) span.textContent = `🛒 ${count} • AED ${total.toFixed(0)} • ${token?'D1 Saved':'Local'}`;
+      }
+      if(checkoutBtn) checkoutBtn.style.display = count?'inline-block':'none';
       window.dispatchEvent(new CustomEvent('kova:cart', {detail: count}));
     };
 
@@ -177,6 +247,10 @@ export const Menu = {
       let data = [...this.dishes];
       if(this.activeFilter!=='All'){
         const f = this.activeFilter.toLowerCase();
+        if(f==='wishlist'){
+          const wishIds = new Set(this.wishlist.map(w=>String(w.id)));
+          return data.filter(d=>wishIds.has(String(d.id)));
+        }
         data = data.filter(d=>{
           const hay = `${d.section} ${d.fire} ${d.category} ${d.tags.join(' ')} ${d.badge}`.toLowerCase();
           if(f==='flame') return hay.includes('flame') || hay.includes('ember') || hay.includes('wood');
@@ -197,7 +271,7 @@ export const Menu = {
       if(reset){ grid.innerHTML=''; this.page=0; }
       const data = getFiltered();
       if(data.length===0){
-        grid.innerHTML=`<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-muted)">No results for ${this.activeFilter} — try All</div>`;
+        grid.innerHTML=`<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-muted)">No results for ${this.activeFilter} — try All<br><button onclick="location.hash='#/menu'" style="margin-top:10px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);padding:6px 12px;border-radius:999px;font-size:11px;cursor:pointer">Clear Filter</button></div>`;
         const sent = document.getElementById('sentinel');
         if(sent) sent.textContent='';
         return;
@@ -218,7 +292,7 @@ export const Menu = {
               <div style="font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.title}</div>
               <div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${d.ar}</div>
               <div style="font-size:12px;color:var(--text-muted);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px;line-height:1.4">${d.desc}</div>
-              <button class="add-cart" data-id="${d.id}" style="margin-top:10px;width:100%;background:${inCart?'#F4F4F5':'#C8FF00'};color:#0A0A0B;border:none;padding:10px;border-radius:999px;font-weight:800;font-size:11px;cursor:pointer">${inCart?`✓ x${inCart.qty}`:'+ Add to Cart'}</button>
+              <button class="add-cart" data-id="${d.id}" style="margin-top:10px;width:100%;background:${inCart?'#F4F4F5':'#C8FF00'};color:#0A0A0B;border:none;padding:10px;border-radius:999px;font-weight:800;font-size:11px;cursor:pointer">${inCart?`✓ x${inCart.qty} ${token?'• D1':''}`:'+ Add to Cart • D1 Safe'}</button>
             </div>
           </div>
         `);
@@ -227,12 +301,12 @@ export const Menu = {
       const sentinel = document.getElementById('sentinel');
       const data2 = getFiltered();
       if(sentinel){
-        if(this.page*12 >= data2.length) sentinel.textContent = `End • ${data2.length} dishes in ${this.activeFilter}`;
+        if(this.page*12 >= data2.length) sentinel.textContent = `End • ${data2.length} dishes in ${this.activeFilter} • ${token?'D1':'Local'}`;
         else sentinel.textContent = 'Loading ember...';
       }
 
       grid.querySelectorAll('.wish-heart').forEach(b=>{
-        b.onclick = (e)=>{
+        b.onclick = async (e)=>{
           e.stopPropagation();
           const id=b.dataset.id;
           const item=this.dishes.find(x=>String(x.id)===String(id));
@@ -242,11 +316,12 @@ export const Menu = {
           updateTopbarWishlist();
           b.textContent = ex>=0 ? '🤍' : '❤️';
           b.style.color = ex>=0 ? 'var(--text-main)' : '#FF4E1F';
+          await d1.wishToggle(item);
         };
       });
 
       grid.querySelectorAll('.add-cart').forEach(b=>{
-        b.onclick = (e)=>{
+        b.onclick = async (e)=>{
           e.stopPropagation();
           const id=b.dataset.id;
           const item=this.dishes.find(x=>String(x.id)===String(id));
@@ -256,40 +331,64 @@ export const Menu = {
           else this.cart.push({...item, qty:1});
           updateTopbarCart();
           const qty = this.cart.find(c=>String(c.id)===String(id)).qty;
-          b.textContent = `✓ x${qty}`;
+          b.textContent = `✓ x${qty} ${token?'• D1':''}`;
           b.style.background = '#F4F4F5';
+          await d1.cartAdd({...item, qty:1});
         };
       });
     };
+
+    // Checkout → D1 Order
+    document.getElementById('checkoutBtn')?.addEventListener('click', async()=>{
+      if(this.cart.length===0) return;
+      const btn = document.getElementById('checkoutBtn');
+      const old = btn.textContent;
+      btn.textContent='Creating order in D1...'; btn.disabled=true;
+      const order = await d1.createOrder();
+      btn.textContent=old; btn.disabled=false;
+      if(order){
+        this.cart = [];
+        localStorage.setItem('kova_cart', JSON.stringify([]));
+        updateTopbarCart();
+        alert(`Order #${order.id.slice(0,8)} created! AED ${order.total} — saved in D1. Check My Orders. Never lost even if you change device.`);
+        location.hash='#/orders';
+      }
+    });
+    document.getElementById('viewCartBtn')?.addEventListener('click', ()=>{
+      location.hash='#/orders';
+    });
 
     document.querySelectorAll('.filter-chip').forEach(chip=>{
       chip.onclick = ()=>{
         this.activeFilter = chip.dataset.filter;
         sessionStorage.setItem('kova_filter', this.activeFilter);
-        const url = new URL(window.location);
+        const url = new URL(window.location.href);
         url.searchParams.set('filter', this.activeFilter);
-        history.replaceState(null,'',url);
+        // keep hash mode
+        const baseHash = location.hash.split('?')[0]||'#/menu';
+        location.hash = baseHash + `?filter=${encodeURIComponent(this.activeFilter)}`;
         document.querySelectorAll('.filter-chip').forEach(c=>{ c.classList.remove('active'); c.classList.add('idle'); });
         chip.classList.add('active'); chip.classList.remove('idle');
         loadMore(true);
       };
     });
 
-    const navSearch = document.querySelector('#global-search, input[type="search"], #searchInput');
-    if(navSearch){
-      navSearch.addEventListener('input', (e)=>{
-        this.searchQuery = e.target.value;
-        loadMore(true);
-      });
-    }
+    // Global search from Topbar
+    window.addEventListener('kova:search', (e)=>{
+      this.searchQuery = e.detail||'';
+      loadMore(true);
+    });
+    window.addEventListener('kova:show-wishlist', ()=>{
+      this.activeFilter='Wishlist';
+      loadMore(true);
+      document.querySelectorAll('.filter-chip').forEach(c=>{ c.classList.remove('active'); c.classList.add('idle'); });
+    });
 
     window.navigateMenu = (filter)=>{
       this.activeFilter = filter || 'All';
       sessionStorage.setItem('kova_filter', this.activeFilter);
-      history.pushState(null,'','/menu?filter='+encodeURIComponent(this.activeFilter));
-      window.dispatchEvent(new PopStateEvent('popstate'));
-      window.dispatchEvent(new CustomEvent('kova:navigated'));
-      setTimeout(()=>{ if(document.getElementById('menuGrid')) loadMore(true); }, 50);
+      location.hash = `#/menu?filter=${encodeURIComponent(this.activeFilter)}`;
+      setTimeout(()=>{ if(document.getElementById('menuGrid')) loadMore(true); }, 100);
     };
     window.filterBy = (filter)=>{ this.activeFilter = filter; loadMore(true); };
 

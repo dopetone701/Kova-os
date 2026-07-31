@@ -1,6 +1,7 @@
-// KOVA Sidebar - DOPETONE NOIR - ORANGE BALANCED - ACTIVE SYNC - ADMIN LOCKED - FIXED SINGLE CLICK ORANGE ONLY
+// KOVA Sidebar - DOPETONE NOIR - FIXED - ADMIN + STAFF HIDDEN UNTIL D1 ADMIN SIGN-IN
 export const Sidebar = {
   WORKER_URL: 'https://kova-clean-api.dopetone701.workers.dev',
+  GUEST_WORKER: 'https://kova-guest-sign-up.dopetone701.workers.dev',
   ALLOWED_ADMIN: 'dopetone701@gmail.com',
 
   async render() {
@@ -15,20 +16,43 @@ export const Sidebar = {
       admin: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
       help: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
       contact: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 1.1 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+      auth: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
       close: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
     };
 
-    const savedEmail = localStorage.getItem('kova_admin_email') || this.ALLOWED_ADMIN;
+    // STRICT HIDE: Admin+Staff hidden unless D1 says is_admin=1
+    const token = localStorage.getItem('kova_token');
+    let guest = null;
     let isAdmin = false;
-    try {
-      const r = await fetch(`${this.WORKER_URL}/api/me`, { headers: { 'X-Admin-Email': savedEmail } });
-      const d = await r.json();
-      isAdmin = !!d.isAdmin;
-      if(isAdmin) localStorage.setItem('kova_is_admin','1');
-    } catch(e) {
-      isAdmin = localStorage.getItem('kova_is_admin')==='1' || savedEmail === this.ALLOWED_ADMIN;
+
+    try{
+      const sg = localStorage.getItem('kova_guest');
+      if(sg) guest = JSON.parse(sg);
+    }catch{}
+
+    if(token){
+      try{
+        const r = await fetch(`${this.GUEST_WORKER}/api/guest/me`, {headers:{'Authorization':`Bearer ${token}`}});
+        if(r.ok){
+          const d = await r.json();
+          if(d.guest){
+            guest = d.guest;
+            isAdmin = !!d.guest.is_admin; // ONLY D1 truth
+            localStorage.setItem('kova_guest', JSON.stringify(d.guest));
+            localStorage.setItem('kova_is_admin', isAdmin?'1':'0');
+            if(isAdmin) localStorage.setItem('kova_admin_email', d.guest.email);
+          }
+        } else if(r.status===401){
+          localStorage.removeItem('kova_token');
+          localStorage.removeItem('kova_guest');
+          localStorage.removeItem('kova_is_admin');
+          localStorage.removeItem('kova_admin_email');
+          guest=null; isAdmin=false;
+        }
+      }catch{}
+    } else {
+      isAdmin = false; // no token = never admin
     }
-    if(savedEmail === this.ALLOWED_ADMIN) isAdmin = true;
 
     el.innerHTML = `
       <style>
@@ -39,43 +63,18 @@ export const Sidebar = {
       .nav{padding:8px 12px;flex:1;overflow-y:auto}
       .nav-item{ position:relative; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; color:var(--text-muted); text-decoration:none; font-size:14px; font-weight:500; transition:.15s ease; cursor:pointer; border:1px solid transparent; margin-bottom:4px; user-select:none; }
       .nav-item:hover{background:var(--bg-hover);color:var(--text-main)}
-      
-      /* SINGLE ORANGE SELECTOR - ALL VIEWS */
-      .nav-item.active,
-      .nav-item[data-view="home"].active,
-      .nav-item[data-view="menu"].active,
-      .nav-item[data-view="orders"].active,
-      .nav-item[data-view="story"].active,
-      .nav-item[data-view="staff"].active,
-      .nav-item[data-view="help"].active,
-      .nav-item[data-view="contact"].active,
-      .nav-item[data-view="admin"].active{
-          background: var(--accent-2) !important;
-          color:#fff !important;
-          border-color: var(--accent-2) !important;
-      }
+      .nav-item.active{background: var(--accent-2) !important;color:#fff !important;border-color: var(--accent-2) !important;}
       .nav-item.active svg{stroke:#fff !important;color:#fff !important}
-      .nav-item:hover:not(.active){
-          color: var(--accent-2) !important;
-          background: var(--bg-hover);
-      }
-      .nav-dot{
-          width:6px; height:6px; border-radius:50%; display:inline-block; margin-left:auto;
-          background: var(--accent-2);
-          box-shadow:0 0 6px var(--accent-2);
-      }
+      .nav-item:hover:not(.active){color: var(--accent-2) !important;background: var(--bg-hover);}
+      .nav-dot{width:6px; height:6px; border-radius:50%; display:inline-block; margin-left:auto;background: var(--accent-2);box-shadow:0 0 6px var(--accent-2);}
       .sidebar-foot{padding:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
       .btn-icon{background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);padding:10px 12px;border-radius:10px;font-size:12px;cursor:pointer;transition:.2s}
       .btn-icon:hover{color:var(--text-main);background:var(--bg-hover)}
+      .guest-mini{display:flex;gap:10px;align-items:center;padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:4px}
+      .guest-mini img{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--bg-app);border:1px solid var(--border)}
       </style>
 
-      <button id="sb-close-x" onclick="window.closeSidebar && window.closeSidebar()" style="
-        position:absolute; top:16px; right:16px;
-        width:32px; height:32px; border-radius:50%;
-        background:var(--bg-hover); border:1px solid var(--border);
-        color:var(--text-main); cursor:pointer;
-        display:none; align-items:center; justify-content:center; z-index:5;
-      ">${icons.close}</button>
+      <button id="sb-close-x" onclick="window.closeSidebar && window.closeSidebar()" style="position:absolute; top:16px; right:16px;width:32px; height:32px; border-radius:50%;background:var(--bg-hover); border:1px solid var(--border);color:var(--text-main); cursor:pointer;display:none; align-items:center; justify-content:center; z-index:5;">${icons.close}</button>
 
       <div class="logo-wrap">
         <div class="logo">K<span class="o-green">O</span>VA</div>
@@ -84,47 +83,46 @@ export const Sidebar = {
       </div>
 
       <nav class="nav">
-        <a class="nav-item" data-link href="/" data-view="home">${icons.home} Home <span class="nav-dot" style="display:none"></span></a>
-        <a class="nav-item" data-link href="/menu" data-view="menu">${icons.menu} Menu <span class="nav-dot" style="display:none"></span></a>
-        <a class="nav-item" data-link href="/orders" data-view="orders">${icons.orders} Orders <span class="nav-dot" style="display:none"></span></a>
-        <a class="nav-item" data-link href="/story" data-view="story">${icons.story} Our Story</a>
-        <a class="nav-item" data-link href="/staff" data-view="staff">${icons.staff} Staff</a>
-        <a class="nav-item" data-link href="/help" data-view="help">${icons.help} Help</a>
-        <a class="nav-item" data-link href="/contact" data-view="contact">${icons.contact} Contacts</a>
-        ${isAdmin? `<a class="nav-item" data-link data-admin href="/admin" data-view="admin">${icons.admin} Admin <span class="admin-badge" style="margin-left:auto;font-size:10px;background:var(--accent);color:#000;padding:2px 8px;border-radius:99px;font-weight:800">YOU</span></a>` : ``}
+        <a class="nav-item" data-link href="#/home" data-view="home">${icons.home} Home <span class="nav-dot" style="display:none"></span></a>
+        <a class="nav-item" data-link href="#/menu" data-view="menu">${icons.menu} Menu <span class="nav-dot" style="display:none"></span></a>
+        <a class="nav-item" data-link href="#/orders" data-view="orders">${icons.orders} Orders <span class="nav-dot" style="display:none"></span></a>
+        <a class="nav-item" data-link href="#/story" data-view="story">${icons.story} Our Story</a>
+        ${isAdmin? `<a class="nav-item" data-link href="#/staff" data-view="staff">${icons.staff} Staff <span style="margin-left:auto;font-size:9px;background:var(--accent);color:#000;padding:2px 6px;border-radius:99px;font-weight:800">ADMIN</span></a>` : ``}
+        <a class="nav-item" data-link href="#/help" data-view="help">${icons.help} Help</a>
+        <a class="nav-item" data-link href="#/contact" data-view="contact">${icons.contact} Contacts</a>
+        ${isAdmin? `<a class="nav-item" data-link data-admin href="#/admin" data-view="admin">${icons.admin} Admin <span class="admin-badge" style="margin-left:auto;font-size:10px;background:var(--accent);color:#000;padding:2px 8px;border-radius:99px;font-weight:800">YOU</span></a>` : ``}
+        ${!guest? `<a class="nav-item" data-link href="#/auth" data-view="auth">${icons.auth} Sign In / Up</a>` : ``}
       </nav>
 
       <div class="sidebar-foot">
-        <div style="font-size:10px;color:var(--text-muted);padding:0 12px 8px;opacity:0.7">${isAdmin? `ADMIN: ${savedEmail}` : `Guest Mode — Admin Hidden`}</div>
-        <button class="btn-icon" onclick="window.toggleTheme && window.toggleTheme()" style="display:flex; gap:8px; align-items:center; width:100%; justify-content:flex-start;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-          Toggle Theme
-        </button>
-        <button class="btn-icon" onclick="window.toggleSidebar && window.toggleSidebar()" style="display:flex; gap:8px; align-items:center; width:100%; justify-content:flex-start;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-          Hide Sidebar
-        </button>
+        ${guest? `
+          <div class="guest-mini">
+            ${guest.photo_url? `<img src="${guest.photo_url.startsWith('/api/')? `${this.GUEST_WORKER}${guest.photo_url}` : guest.photo_url}" onerror="this.style.display='none'" />` : `<div style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#000;display:grid;place-items:center;font-weight:900">${(guest.name||'G').charAt(0).toUpperCase()}</div>`}
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-main)">${guest.name}</div>
+              <div style="font-size:10px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${guest.email}</div>
+              <div style="font-size:9px;color:${isAdmin?'var(--accent)':'var(--text-muted)'};margin-top:2px">${isAdmin? 'ADMIN • D1 Verified':'D1 • Guest'}</div>
+            </div>
+          </div>
+          <button class="btn-icon" onclick="localStorage.clear();location.hash='#/home';location.reload()" style="width:100%">Logout — Clear Session</button>
+        ` : `
+          <div style="font-size:10px;color:var(--text-muted);padding:0 12px 8px;opacity:0.7">Guest Mode — Staff & Admin hidden<br>Sign in as <b style="color:var(--text-main)">${this.ALLOWED_ADMIN}</b> to unlock</div>
+        `}
+        <button class="btn-icon" onclick="window.toggleTheme && window.toggleTheme()" style="width:100%">Toggle Theme</button>
+        <button class="btn-icon" onclick="window.toggleSidebar && window.toggleSidebar()" style="width:100%">Hide Sidebar</button>
       </div>
     `;
 
-    // SINGLE CLICK HANDLER - immediate active feedback
     const nav = el.querySelector('.nav');
     if(nav){
       nav.onclick = (e) => {
         const link = e.target.closest('.nav-item');
         if (!link) return;
-        // instant orange feedback
         el.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
         link.classList.add('active');
-        const dot = link.querySelector('.nav-dot');
-        if(dot) dot.style.display='inline-block';
-        // mobile auto close
-        if(window.innerWidth <= 768){
-          setTimeout(()=> window.closeSidebar && window.closeSidebar(), 150);
-        }
+        if(window.innerWidth <= 768) setTimeout(()=> window.closeSidebar && window.closeSidebar(), 150);
       };
     }
-
     this.setActive();
     this._bindRouteListener();
   },
@@ -132,22 +130,17 @@ export const Sidebar = {
   setActive(forcePath) {
     const el = document.getElementById('sidebar');
     if(!el) return;
-    const path = (forcePath || window.location.pathname || '/').split('?')[0].toLowerCase();
-
+    const raw = forcePath || window.location.hash || '/';
+    let path = raw.toLowerCase();
+    if(path.startsWith('#')) path = path.slice(1);
+    path = path.split('?')[0]||'/';
+    if(!path.startsWith('/')) path = '/'+path;
     el.querySelectorAll('.nav-item').forEach(n => {
-      const href = (n.getAttribute('href') || '').toLowerCase();
-      let active = false;
-      if (path === href) active = true;
-      else if (href!== '/' && path.startsWith(href) && href.length>1) active = true;
-      else if (path === '/' && href === '/') active = true;
-      if (!active && window.location.hash.toLowerCase().includes('menu') && href === '/menu') active = true;
-      if (!active && window.location.hash.toLowerCase().includes('orders') && href === '/orders') active = true;
-
-      if (active) n.classList.add('active');
-      else n.classList.remove('active');
-
-      const dot = n.querySelector('.nav-dot');
-      if(dot) dot.style.display = active? 'inline-block' : 'none';
+      const href = (n.getAttribute('href') || '').toLowerCase().replace(/^#/,'');
+      let hp = href.split('?')[0];
+      if(!hp.startsWith('/')) hp='/'+hp;
+      const active = path===hp || (hp!=='/' && path.startsWith(hp) && hp.length>1);
+      if(active) n.classList.add('active'); else n.classList.remove('active');
     });
   },
 
@@ -155,22 +148,7 @@ export const Sidebar = {
     if (this._bound) return;
     this._bound = true;
     const self = this;
-    // immediate sync, no setTimeout delay
-    window.addEventListener('popstate', () => self.setActive());
     window.addEventListener('hashchange', () => self.setActive());
     window.addEventListener('kova:navigated', () => self.setActive());
-    
-    const origPush = history.pushState;
-    const origReplace = history.replaceState;
-    history.pushState = function(...args) {
-      const ret = origPush.apply(this, args);
-      self.setActive();
-      return ret;
-    };
-    history.replaceState = function(...args) {
-      const ret = origReplace.apply(this, args);
-      self.setActive();
-      return ret;
-    };
   }
 };

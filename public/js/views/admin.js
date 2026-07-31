@@ -1,11 +1,34 @@
-// KOVA Admin OS — CLOUD R2 READY + BULK INJECTOR — DOPETONE PRO — EDIT FIXED
+// KOVA Admin OS — CLOUD R2 READY + BULK INJECTOR — DOPETONE PRO — EDIT FIXED + ADMIN LOCK D1 + GUEST ORDERS
 import { api } from '../services/api.js';
 
 const WORKER_URL = 'https://kova-clean-api.dopetone701.workers.dev';
+const GUEST_WORKER = 'https://kova-guest-sign-up.dopetone701.workers.dev';
+const ALLOWED_ADMIN = 'dopetone701@gmail.com';
 
 export const Admin = {
   activeTab: 'menu',
   bulkFiles: [],
+  isAdmin: false,
+
+  async checkAdmin(){
+    const token = localStorage.getItem('kova_token');
+    let isAdmin = localStorage.getItem('kova_is_admin')==='1';
+    try{
+      if(token){
+        const r = await fetch(`${GUEST_WORKER}/api/guest/me`, {headers:{'Authorization':`Bearer ${token}`}});
+        if(r.ok){
+          const d = await r.json();
+          if(d.guest && d.guest.is_admin){
+            isAdmin = true;
+            localStorage.setItem('kova_is_admin','1');
+            localStorage.setItem('kova_admin_email', d.guest.email);
+          }
+        }
+      }
+    }catch{}
+    this.isAdmin = isAdmin;
+    return isAdmin;
+  },
 
   render() {
     setTimeout(() => this.attachEvents(), 100);
@@ -14,7 +37,8 @@ export const Admin = {
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
           <div style="display:flex;align-items:center;gap:12px;">
             <h2 style="font-size:28px;font-weight:900;color:var(--text-main)">Admin OS</h2>
-            <span style="background:var(--accent);color:#000;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900;">CLOUD R2 + BULK</span>
+            <span style="background:var(--accent);color:#000;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900;">CLOUD R2 + BULK + D1 GUESTS</span>
+            <span id="adminBadge" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:99px;font-size:10px;font-weight:700;">Checking D1...</span>
           </div>
           <div style="display:flex;gap:8px">
             <button id="btnBulk" class="btn-primary" style="background:#fff;color:#000;padding:10px 14px;border-radius:99px;font-weight:800;border:none;cursor:pointer">⚡ BULK INJECTOR</button>
@@ -23,8 +47,8 @@ export const Admin = {
         </div>
 
         <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px;overflow-x:auto">
-          ${['menu','staff','reservations','hero'].map(t=>`
-            <button data-tab="${t}" style="padding:8px 16px;border-radius:99px;border:1px solid var(--border);background:${this.activeTab===t?'var(--text-main)':'transparent'};color:${this.activeTab===t?'var(--bg-app)':'var(--text-muted)'};font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap">${t.toUpperCase()}</button>
+          ${['menu','orders','staff','reservations','hero'].map(t=>`
+            <button data-tab="${t}" style="padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:${this.activeTab===t?'var(--text-main)':'transparent'};color:${this.activeTab===t?'var(--bg-app)':'var(--text-muted)'};font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap">${t.toUpperCase()} ${t==='orders'?'🛒':''}</button>
           `).join('')}
         </div>
 
@@ -52,6 +76,17 @@ export const Admin = {
       </div>
       <div id="menuLiveGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px"><div style="padding:20px;color:var(--text-muted)">Loading LIVE from D1...</div></div>`;
     }
+    if(tab==='orders'){
+      return `
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+            <div><b>Guest Orders — D1 Persistent</b><p style="color:var(--text-muted);font-size:12px;margin-top:4px">All guest orders from D1 • Never lost even if guest changes device • R2 photos safe</p></div>
+            <button id="refreshOrders" style="background:var(--text-main);color:var(--bg-app);border:0;padding:8px 14px;border-radius:999px;font-weight:700;font-size:11px;cursor:pointer">Refresh D1</button>
+          </div>
+          <div id="ordersGrid" style="margin-top:16px;display:flex;flex-direction:column;gap:10px"><div style="padding:20px;color:var(--text-muted);text-align:center">Loading orders from D1...</div></div>
+        </div>
+      `;
+    }
     if(tab==='staff'){
       const staff = JSON.parse(localStorage.getItem('kova_staff') || '[]');
       return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px">${staff.map(s=>`<div style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)"><span><b>${s.name}</b> • ${s.role} • ${s.shift}</span><button onclick="window.delStaff('${s.id}')" style="color:var(--accent-2);background:none;border:none;cursor:pointer">Del</button></div>`).join('') || '<div style="padding:24px;color:var(--text-muted)">No staff — Add first</div>'}</div>`;
@@ -74,12 +109,98 @@ export const Admin = {
     return data.url;
   },
 
-  attachEvents() {
+  async loadGuestOrders(){
+    const grid = document.getElementById('ordersGrid');
+    if(!grid) return;
+    const token = localStorage.getItem('kova_token');
+    if(!token){
+      grid.innerHTML = `<div style="padding:20px;color:var(--accent-2);text-align:center">No token — sign in as admin first<br><button onclick="location.hash='#/auth'" style="margin-top:10px;background:var(--accent);color:#000;border:0;padding:8px 16px;border-radius:999px;font-weight:800;cursor:pointer">Sign In</button></div>`;
+      return;
+    }
+    try{
+      const r = await fetch(`${GUEST_WORKER}/api/admin/orders`, {headers:{'Authorization':`Bearer ${token}`}});
+      const d = await r.json();
+      if(!r.ok) throw new Error(d.error||'Failed');
+      const orders = d.orders||[];
+      if(orders.length===0){
+        grid.innerHTML = `<div style="padding:30px;text-align:center;color:var(--text-muted)"><div style="font-size:28px">🛒</div><div style="margin-top:8px;font-weight:700">No guest orders yet in D1</div><div style="font-size:11px;margin-top:4px">Guest carts → orders when they checkout. Orders never lost across devices.</div></div>`;
+        return;
+      }
+      grid.innerHTML = orders.map(o=>{
+        let items=[];
+        try{ items = JSON.parse(o.items); }catch{}
+        const date = new Date(o.created_at).toLocaleString('en-AE',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+        return `
+          <div style="background:var(--bg-app);border:1px solid var(--border);border-radius:12px;padding:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <b style="font-size:13px">#${o.id.slice(0,8)}</b>
+                <span style="font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(255,78,31,0.15);color:var(--accent-2);border:1px solid rgba(255,78,31,0.3);font-weight:800">${o.status.toUpperCase()}</span>
+                <span style="font-size:10px;color:var(--text-muted)">${date}</span>
+              </div>
+              <div style="font-weight:900;font-size:13px;color:var(--accent)">AED ${o.total}</div>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+              ${items.map(it=>`<span style="font-size:10px;background:var(--bg-card);border:1px solid var(--border);padding:4px 8px;border-radius:999px">${it.title||it.item_id} x${it.qty}</span>`).join('')}
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text-muted)">👤 ${o.guest_name} • ${o.guest_email} • ${o.guest_phone||'No phone'}</div>
+            <div style="margin-top:8px;display:flex;gap:6px">
+              ${['pending','preparing','ready','done'].map(s=>`<button onclick="window.updateOrderStatus('${o.id}','${s}')" style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:${o.status===s?'var(--accent)':'var(--bg-card)'};color:${o.status===s?'#000':'var(--text-muted)'};font-size:10px;font-weight:700;cursor:pointer">${s}</button>`).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      window.updateOrderStatus = async (id, status)=>{
+        try{
+          const token = localStorage.getItem('kova_token');
+          const r = await fetch(`${GUEST_WORKER}/api/admin/orders/${id}/status`, {method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({status})});
+          const d = await r.json();
+          if(!r.ok) throw new Error(d.error);
+          this.loadGuestOrders();
+        }catch(e){ alert('Status update failed: '+e.message); }
+      };
+
+    }catch(e){
+      grid.innerHTML = `<div style="padding:20px;color:var(--accent-2)">Failed to load D1 orders: ${e.message}<br><span style="font-size:11px;color:var(--text-muted)">Make sure you are admin (dopetone701@gmail.com) and worker ${GUEST_WORKER} has D1 binding KOVA_D1</span></div>`;
+    }
+  },
+
+  async attachEvents() {
+    const isAdmin = await this.checkAdmin();
+    const badge = document.getElementById('adminBadge');
+    if(badge){
+      badge.textContent = isAdmin? 'ADMIN D1 ✓' : 'NOT ADMIN';
+      badge.style.background = isAdmin? 'var(--accent)' : 'var(--bg-card)';
+      badge.style.color = isAdmin? '#000' : 'var(--text-muted)';
+    }
+
+    if(!isAdmin){
+      const content = document.getElementById('adminContent');
+      if(content){
+        content.innerHTML = `
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center">
+            <div style="font-size:40px">🔒</div>
+            <div style="font-size:18px;font-weight:900;margin-top:12px;color:var(--text-main)">Admin OS Locked — D1 Check Failed</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:6px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.5">
+              This Admin OS is locked. Sign in as <b style="color:var(--text-main)">${ALLOWED_ADMIN}</b> to unlock. Your guest carts, wishlists & orders are safely stored in D1 <b>kova-restaurant-d1</b> and photos in R2 <b>kova-restaurant</b>.
+            </div>
+            <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <button onclick="location.hash='#/auth'" style="background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:800;font-size:12px;cursor:pointer">Sign In as Admin →</button>
+              <button onclick="location.hash='#/menu'" style="background:var(--bg-app);border:1px solid var(--border);color:var(--text-main);padding:10px 18px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer">Browse Menu</button>
+            </div>
+          </div>
+        `;
+      }
+      return;
+    }
+
     document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{
       this.activeTab=b.dataset.tab;
       document.getElementById('adminContent').innerHTML=this.getTabHTML(this.activeTab);
       document.getElementById('btnAddMain').textContent='+ Add '+this.activeTab;
       this.attachEvents();
+      if(this.activeTab==='orders') setTimeout(()=>this.loadGuestOrders(), 50);
     });
 
     document.getElementById('btnAddMain')?.addEventListener('click',()=>this.openModal(this.activeTab));
@@ -87,6 +208,12 @@ export const Admin = {
       const zone = document.getElementById('bulkZone');
       if(zone) zone.style.display = zone.style.display==='none'? 'block' : 'none';
     });
+
+    document.getElementById('refreshOrders')?.addEventListener('click',()=>this.loadGuestOrders());
+
+    if(this.activeTab==='orders'){
+      this.loadGuestOrders();
+    }
 
     if(this.activeTab==='menu'){
       this.loadLiveMenu();
@@ -171,7 +298,6 @@ export const Admin = {
       const res = await fetch(`${WORKER_URL}/api/menu`);
       const items = await res.json();
       if(!items.length){ grid.innerHTML = '<div style="padding:20px;color:var(--text-muted);border:2px dashed var(--border);border-radius:12px;text-align:center">No LIVE D1 items — use BULK INJECTOR above</div>'; return; }
-      // Store for edit
       window._kovaLive = items;
       grid.innerHTML = items.map(d=>`
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden">
