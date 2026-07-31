@@ -78,3 +78,4 @@ export const Sidebar = {
   },
   _bindRouteListener(){ if(this._bound) return; this._bound=true; const self=this; window.addEventListener('hashchange',()=>self.setActive()); window.addEventListener('kova:navigated',()=>self.setActive()); }
 };
+

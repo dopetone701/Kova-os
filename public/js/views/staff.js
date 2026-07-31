@@ -23,6 +23,7 @@ export const Staff = {
     `;
   },
 
+  
   async afterRender() {
     const contentEl = document.getElementById('staffContent');
     if(!contentEl) return;

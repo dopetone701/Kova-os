@@ -17,6 +17,7 @@ export const DB = {
     return { url: '/assets/mock.jpg' };
   },
 
+  
   async checkMe() {
     // LATER: returns email from Cloudflare Access / Auth
     // const res = await fetch(`${API_BASE}/api/me`);

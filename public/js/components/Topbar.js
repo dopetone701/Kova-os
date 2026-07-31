@@ -180,6 +180,7 @@ export const Topbar = {
           <span id="topbar-cart-count" class="badge-count badge-cart" style="display:none">0</span>
         </button>
 
+        
         <button class="btn-icon" onclick="window.toggleTheme && window.toggleTheme()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         </button>

@@ -5,6 +5,7 @@ export const Orders = {
   async render(){
     return `
       <style>
+      
         .orders-root{margin:-24px;width:calc(100% + 48px);min-width:calc(100% + 48px);background:var(--bg-app);box-sizing:border-box;min-height:80vh}
         .orders-inner{max-width:1100px;margin:0 auto;padding:32px 40px 100px}
         .order-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;transition:.2s}

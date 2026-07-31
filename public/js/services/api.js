@@ -13,6 +13,7 @@ export const api = {
     }
   },
 
+  
   saveMenu: (dishes) => {
     localStorage.setItem('kova_menu', JSON.stringify(dishes));
     // later: fetch('/api/admin/menu', {method:'POST', body: JSON.stringify(dishes)})

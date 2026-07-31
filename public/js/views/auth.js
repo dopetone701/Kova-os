@@ -56,6 +56,7 @@ export const Auth = {
             <div style="font-size:12px;color:var(--text-muted);margin-top:8px">Your cart & wishlist travel with you â€” even if you change phone</div>
           </div>
 
+          
           <div class="auth-tabs">
             <button class="auth-tab active" data-tab="signin">Sign In</button>
             <button class="auth-tab" data-tab="signup">Sign Up</button>

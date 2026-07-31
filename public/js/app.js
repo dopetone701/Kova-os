@@ -63,6 +63,7 @@ function bootKOVA(){
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;display:none;opacity:0;transition:opacity .2s';
     document.body.appendChild(overlay);
   }
+  
   const getSb = () => document.getElementById('sidebar');
   window.closeSidebar = () => {
     const sb = getSb();

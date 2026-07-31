@@ -169,6 +169,7 @@ export const Story = {
           </div>
         </div>
 
+        
         <div class="story-inner story-content-wrap">
           <div class="story-grid" style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:48px; align-items:start;">
             <div style="min-width:0">

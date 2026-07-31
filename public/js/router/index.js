@@ -7,6 +7,7 @@ import { Story } from '../views/story.js';
 import { Auth } from '../views/auth.js';
 import { Orders } from '../views/orders.js';
 
+
 const routes = {
   '/': Home, '/home': Home, '': Home, 'home': Home, 'index.html': Home,
   '/menu': Menu, 'menu': Menu,

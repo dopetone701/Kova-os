@@ -288,6 +288,7 @@ export const Menu = {
               <button class="wish-heart" data-id="${d.id}" style="position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:rgba(10,10,13,0.9);color:${inWish?'#FF4E1F':'var(--text-main)'};cursor:pointer;z-index:2;display:grid;place-items:center;font-size:14px;transition:.2s">${inWish?'❤️':'🤍'}</button>
               <span style="position:absolute;bottom:10px;right:10px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px">AED ${d.price}</span>
             </div>
+            
             <div style="padding:14px;min-width:0;box-sizing:border-box">
               <div style="font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.title}</div>
               <div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${d.ar}</div>
