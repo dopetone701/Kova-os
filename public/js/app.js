@@ -1,6 +1,6 @@
 // KOVA OS - APP BRAIN - LOCKED BACKEND: kova-main-api + D1 + KOVA-R2 + GUEST AUTH D1 SAFE
-import { Sidebar } from './components/Sidebar.js';
-import { Topbar } from './components/Topbar.js';
+import { Sidebar } from './components/sidebar.js';
+import { Topbar } from './components/topbar.js';
 import { Router } from './router/index.js';
 
 const GUEST_WORKER = 'https://kova-guest-sign-up.dopetone701.workers.dev';

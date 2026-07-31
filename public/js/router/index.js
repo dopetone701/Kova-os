@@ -1,30 +1,29 @@
-// KOVA Router - CLOUDFLARE PAGES SAFE + LIVE SERVER 5500 SAFE + MIME FIX
+// KOVA Router - CLOUDFLARE PAGES SAFE - LOWERCASE ONLY - NO UPPERCASE BUG
 const routes = {
-  '/': () => import('../views/Home.js'),
-  '/home': () => import('../views/Home.js'),
-  '': () => import('../views/Home.js'),
-  'home': () => import('../views/Home.js'),
-  'index.html': () => import('../views/Home.js'),
-  '/menu': () => import('../views/Menu.js'),
-  'menu': () => import('../views/Menu.js'),
-  '/story': () => import('../views/Story.js'),
-  'story': () => import('../views/Story.js'),
-  '/staff': () => import('../views/Staff.js'),
-  'staff': () => import('../views/Staff.js'),
-  '/admin': () => import('../views/Admin.js'),
-  'admin': () => import('../views/Admin.js'),
-  '/auth': () => import('../views/Auth.js').catch(()=>import('../views/auth.js')).catch(()=>import('../views/Home.js')),
-  'auth': () => import('../views/Auth.js').catch(()=>import('../views/auth.js')).catch(()=>import('../views/Home.js')),
-  '/orders': () => import('../views/Orders.js').catch(()=>import('../views/orders.js')).catch(()=>import('../views/Home.js')),
-  'orders': () => import('../views/Orders.js').catch(()=>import('../views/orders.js')).catch(()=>import('../views/Home.js')),
-  '/help': () => import('../views/Story.js'),
-  'help': () => import('../views/Story.js'),
-  '/contact': () => import('../views/Story.js'),
-  'contact': () => import('../views/Story.js'),
+  '/': () => import('../views/home.js'),
+  '/home': () => import('../views/home.js'),
+  '': () => import('../views/home.js'),
+  'home': () => import('../views/home.js'),
+  'index.html': () => import('../views/home.js'),
+  '/menu': () => import('../views/menu.js'),
+  'menu': () => import('../views/menu.js'),
+  '/story': () => import('../views/story.js'),
+  'story': () => import('../views/story.js'),
+  '/staff': () => import('../views/staff.js'),
+  'staff': () => import('../views/staff.js'),
+  '/admin': () => import('../views/admin.js'),
+  'admin': () => import('../views/admin.js'),
+  '/auth': () => import('../views/auth.js'),
+  'auth': () => import('../views/auth.js'),
+  '/orders': () => import('../views/orders.js'),
+  'orders': () => import('../views/orders.js'),
+  '/help': () => import('../views/story.js'),
+  'help': () => import('../views/story.js'),
+  '/contact': () => import('../views/story.js'),
+  'contact': () => import('../views/story.js'),
 };
 
 function getPath(){
-  // Hash takes priority on live server
   const hash = (location.hash||'').replace(/^#/, '');
   if(hash) return hash.split('?')[0];
   let p = location.pathname.replace('/public','') || '/';
@@ -38,31 +37,22 @@ async function load(pathWithSearch){
   let path = raw.split('?')[0];
   path = path.replace(/^#\/?/, '').replace(/^\//, '').replace(/\/$/, '').toLowerCase();
   if(path==='' || path==='index.html' || path==='public') path='home';
-
   app.scrollTop = 0;
   document.querySelectorAll('.nav-item').forEach(el=>{
-    const href = (el.getAttribute('href') || '').toLowerCase().replace(/^#/,'').replace(/^\//,'').split('?')[0];
-    const isActive = href===path || (href!=='' && path!=='' && path.startsWith(href) && href.length>1) || (path==='home' && href==='' );
+    const href = (el.getAttribute('href') || '').toLowerCase().replace(/^#/, '').replace(/^\//, '').split('?')[0];
+    const isActive = href===path || (href!=='' && path!=='' && path.startsWith(href) && href.length>1) || (path==='home' && href==='');
     el.classList.toggle('active', isActive);
   });
   document.getElementById('sidebar')?.classList.remove('open');
-  
   const loader = routes['/'+path] || routes[path] || routes['/home'] || routes['/'];
   try{
     const mod = await loader();
-    // Ensure we get the view object, not the module object itself as string
-    const view = mod.Home || mod.Menu || mod.Staff || mod.Admin || mod.Story || mod.Auth || mod.Orders || mod.default || mod;
+    const view = mod.home || mod.menu || mod.staff || mod.admin || mod.story || mod.auth || mod.orders || mod.Home || mod.Menu || mod.Staff || mod.Admin || mod.Story || mod.Auth || mod.Orders || mod.default || mod;
     let html = '';
-    if(view && typeof view.render === 'function'){
-      html = await view.render();
-    } else if(typeof view === 'function'){
-      html = await view();
-    } else if(typeof view === 'string'){
-      html = view;
-    } else {
-      html = '<div style="padding:40px">View not found</div>';
-    }
-    // Force string - fixes "Cannot convert object to primitive value"
+    if(view && typeof view.render === 'function'){ html = await view.render(); }
+    else if(typeof view === 'function'){ html = await view(); }
+    else if(typeof view === 'string'){ html = view; }
+    else { html = '<div style="padding:40px">View not found</div>'; }
     if(typeof html !== 'string'){
       console.warn('Render returned non-string, converting', typeof html, html);
       html = String(html||'');
@@ -89,14 +79,7 @@ export const Router = {
         e.preventDefault();
         const href = link.getAttribute('href') || '';
         const clean = href.replace(/^#/, '');
-        const isLocal = location.hostname.includes('127.0.0.1') || location.hostname.includes('localhost') || location.port==='5500';
-        if(isLocal){
-          location.hash = clean.startsWith('/')? clean : '/'+clean;
-        } else {
-          // Cloudflare Pages - use hash for SPA safety
-          if(clean.startsWith('#')) location.hash = clean;
-          else location.hash = '#'+ (clean.startsWith('/')? clean : '/'+clean);
-        }
+        location.hash = clean.startsWith('/')? clean : '/'+clean;
         this.resolve();
       }
     });
