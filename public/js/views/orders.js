@@ -26,9 +26,9 @@ export const Orders = {
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
             <div>
               <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0">My Orders <span id="ordersCount" style="font-size:12px;color:var(--text-muted);font-weight:500"></span></h1>
-              <p style="color:var(--text-muted);font-size:13px;margin-top:4px">All orders saved in D1 â€” never lost even if you change device</p>
+              <p style="color:var(--text-muted);font-size:13px;margin-top:4px">All orders saved in D1 — never lost even if you change device</p>
             </div>
-            <button onclick="location.hash='#/menu'" style="background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer">Order More â†’</button>
+            <button onclick="location.hash='#/menu'" style="background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer">Order More →</button>
           </div>
           <div id="ordersList" style="min-height:200px;display:grid;place-items:center;color:var(--text-muted);font-size:13px">Loading your orders from D1...</div>
         </div>
@@ -42,7 +42,7 @@ export const Orders = {
     const countEl = document.getElementById('ordersCount');
     if(!token){
       listEl.innerHTML = `<div style="text-align:center;padding:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px">
-        <div style="font-size:32px">ðŸ”’</div>
+        <div style="font-size:32px">🔒</div>
         <div style="font-weight:800;margin-top:8px;color:var(--text-main)">Sign in to see your orders</div>
         <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Orders travel with your account across devices</div>
         <button onclick="location.hash='#/auth'" style="margin-top:14px;background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:800;cursor:pointer">Sign In / Sign Up</button>
@@ -55,10 +55,10 @@ export const Orders = {
       const data = await res.json();
       if(!res.ok) throw new Error(data.error||'Failed');
       const orders = data.orders||[];
-      if(countEl) countEl.textContent = `â€” ${orders.length}`;
+      if(countEl) countEl.textContent = `— ${orders.length}`;
       if(orders.length===0){
         listEl.innerHTML = `<div style="text-align:center;padding:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px">
-          <div style="font-size:32px">ðŸ›’</div>
+          <div style="font-size:32px">🛒</div>
           <div style="font-weight:700;margin-top:8px;color:var(--text-main)">No orders yet</div>
           <div style="font-size:12px;color:var(--text-muted)">Your cart is saved in D1. Checkout to create first order.</div>
           <button onclick="location.hash='#/menu'" style="margin-top:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);padding:8px 16px;border-radius:999px;font-size:12px;cursor:pointer">Browse Menu</button>
@@ -85,12 +85,12 @@ export const Orders = {
               ${items.map(it=>`
                 <div class="order-item">
                   <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.title||it.item_id}</div>
-                  <div style="font-size:11px;color:var(--text-muted)">x${it.qty} â€¢ AED ${it.price}</div>
+                  <div style="font-size:11px;color:var(--text-muted)">x${it.qty} • AED ${it.price}</div>
                 </div>
               `).join('')}
             </div>
             <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:var(--text-muted)">
-              <span>ðŸ‘¤ ${o.guest_name}</span><span>â€¢</span><span>ðŸ“§ ${o.guest_email}</span>
+              <span>👤 ${o.guest_name}</span><span>•</span><span>📧 ${o.guest_email}</span>
             </div>
           </div>
         `;
