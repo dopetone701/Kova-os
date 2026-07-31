@@ -1,16 +1,85 @@
 export const Topbar = {
   render() {
     const el = document.getElementById('topbar');
+    if(!el) return;
     el.innerHTML = `
       <style>
+        #topbar{
+          height:64px;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:12px;
+          padding:0 20px;
+          background:rgba(10,10,11,0.88);
+          backdrop-filter:blur(18px);
+          border-bottom:1px solid var(--border);
+          position:sticky;
+          top:0;
+          z-index:50;
+        }
+        #topbar .search-box{
+          flex:1;
+          max-width:520px;
+          height:40px;
+          background:var(--bg-card);
+          border:1px solid var(--border);
+          border-radius:999px;
+          display:flex;
+          align-items:center;
+          gap:10px;
+          padding:0 14px;
+          transition:border-color .2s, box-shadow .2s;
+        }
         #topbar .search-box:focus-within{
           border-color: var(--accent-2)!important;
           box-shadow: 0 0 0 3px rgba(255,78,31,0.15);
+        }
+        #topbar .search-box input{
+          flex:1;
+          background:transparent;
+          border:0;
+          outline:0;
+          color:var(--text-main);
+          font-size:13px;
+        }
+        #topbar .btn-icon{
+          width:40px;height:40px;
+          background:var(--bg-card);
+          border:1px solid var(--border);
+          color:var(--text-muted);
+          border-radius:50%;
+          display:flex;align-items:center;justify-content:center;
+          cursor:pointer;
+          transition:.2s;
+          flex-shrink:0;
+          position:relative;
+        }
+        #topbar .btn-icon:hover{
+          background:var(--bg-hover);
+          color:var(--text-main);
+          border-color:var(--text-muted);
+        }
+        #topbar .btn-icon.cart-active{
+          background:var(--accent);
+          color:#000;
+          border-color:var(--accent);
+        }
+        #topbar .btn-icon.wish-active{
+          color:var(--accent-2);
+          border-color:rgba(255,78,31,0.3);
         }
         #topbar .btn-primary{
           background: var(--accent);
           color:#000;
           transition: all .2s;
+          border:0;
+          padding:10px 18px;
+          border-radius:999px;
+          font-weight:800;
+          font-size:13px;
+          cursor:pointer;
+          white-space:nowrap;
         }
         #topbar .btn-primary:hover{
           background: var(--accent-2);
@@ -38,23 +107,61 @@ export const Topbar = {
           border-radius:50%;
           box-shadow:0 0 6px var(--accent-2);
         }
+        #topbar .badge-count{
+          position:absolute;
+          top:-4px; right:-4px;
+          min-width:18px; height:18px;
+          padding:0 5px;
+          border-radius:999px;
+          font-size:10px;
+          font-weight:900;
+          display:grid;
+          place-items:center;
+          line-height:1;
+          border:2px solid var(--bg-app);
+        }
+        #topbar .badge-wish{
+          background:var(--accent-2);
+          color:#fff;
+        }
+        #topbar .badge-cart{
+          background:var(--accent);
+          color:#000;
+        }
+        @media(max-width:768px){
+          #topbar{padding:0 12px;gap:8px}
+          #topbar .search-box{max-width:none;flex:1}
+          #topbar .btn-primary{display:none}
+        }
+
+        
       </style>
 
-      <button class="btn-icon" onclick="toggleSidebar()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <button class="btn-icon" onclick="window.toggleSidebar && window.toggleSidebar()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
 
-      <div class="search-box" style="position:relative; transition:border-color .2s, box-shadow .2s;">
+      <div class="search-box">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Search dishes, staff, orders..." id="globalSearch" autocomplete="off" />
         <button id="clearSearch" style="display:none; background:none; border:none; cursor:pointer; color:var(--text-muted);">✕</button>
       </div>
 
-      <div style="display:flex; gap:10px; align-items:center;">
-        <button class="btn-icon" onclick="toggleTheme()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0;">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button id="topbar-wish" class="btn-icon" title="Wishlist">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          <span id="topbar-wish-count" class="badge-count badge-wish" style="display:none">0</span>
+        </button>
+
+        <button id="topbar-cart" class="btn-icon" title="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span id="topbar-cart-count" class="badge-count badge-cart" style="display:none">0</span>
+        </button>
+
+        <button class="btn-icon" onclick="window.toggleTheme && window.toggleTheme()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         </button>
-        <button class="btn-primary" style="white-space:nowrap;">Book Table</button>
+        <button class="btn-primary" onclick="window.location.hash='#book'">Book Table</button>
         <div class="k-avatar">K</div>
       </div>
     `;
@@ -66,20 +173,94 @@ export const Topbar = {
     const savedQ = sessionStorage.getItem('kova-search');
     if(savedQ) input.value = savedQ;
 
+    // ---- WISH + CART COUNTS ----
+    const wishBtn = el.querySelector('#topbar-wish');
+    const cartBtn = el.querySelector('#topbar-cart');
+    const wishCountEl = el.querySelector('#topbar-wish-count');
+    const cartCountEl = el.querySelector('#topbar-cart-count');
+
+    const refreshCounts = () => {
+      try{
+        const wish = JSON.parse(localStorage.getItem('kova_wish')||'[]');
+        const cart = JSON.parse(localStorage.getItem('kova_cart')||'[]');
+        const wCount = wish.length;
+        const cCount = cart.reduce((s,i)=>s+(i.qty||1),0);
+
+        if(wishCountEl){
+          wishCountEl.textContent = wCount;
+          wishCountEl.style.display = wCount>0 ? 'grid' : 'none';
+        }
+        if(cartCountEl){
+          cartCountEl.textContent = cCount;
+          cartCountEl.style.display = cCount>0 ? 'grid' : 'none';
+        }
+        if(wishBtn){
+          if(wCount>0) wishBtn.classList.add('wish-active');
+          else wishBtn.classList.remove('wish-active');
+        }
+        if(cartBtn){
+          if(cCount>0) cartBtn.classList.add('cart-active');
+          else cartBtn.classList.remove('cart-active');
+        }
+      }catch{}
+    };
+
+    refreshCounts();
+    window.addEventListener('kova:wishlist', refreshCounts);
+    window.addEventListener('kova:cart', refreshCounts);
+    window.addEventListener('storage', refreshCounts);
+    // custom events from Menu
+    window.addEventListener('kova:wishlist', refreshCounts);
+
+    wishBtn?.addEventListener('click', ()=>{
+      const wish = JSON.parse(localStorage.getItem('kova_wish')||'[]');
+      if(wish.length===0){
+        input.focus();
+        input.placeholder = 'No favourites yet — tap 🤍 on cards';
+        setTimeout(()=> input.placeholder = 'Search dishes, staff, orders...', 2000);
+        return;
+      }
+      // go to menu and show only wishlist
+      if(!location.pathname.includes('/menu')){
+        history.pushState(null,'','/menu?filter=Wishlist');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+      window.dispatchEvent(new CustomEvent('kova:show-wishlist'));
+    });
+
+    cartBtn?.addEventListener('click', ()=>{
+      const cart = JSON.parse(localStorage.getItem('kova_cart')||'[]');
+      if(cart.length===0){
+        // go to menu
+        if(!location.pathname.includes('/menu')){
+          history.pushState(null,'','/menu');
+          window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+        return;
+      }
+      history.pushState(null,'','/orders');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new CustomEvent('kova:navigated'));
+    });
+
     const doSearch = () => {
       const q = input.value.trim().toLowerCase();
       sessionStorage.setItem('kova-search', q);
       clearBtn.style.display = q ? 'block' : 'none';
 
       if(!q){
-        document.querySelectorAll('.card').forEach(c => {
+        document.querySelectorAll('.k-card, .card').forEach(c => {
           c.style.display = '';
           c.style.outline = '';
         });
+        window.dispatchEvent(new CustomEvent('kova:search', {detail: ''}));
         return;
       }
 
-      const isMenu = document.querySelector('.grid') || location.pathname.includes('menu');
+      // dispatch global search for Menu to pick up
+      window.dispatchEvent(new CustomEvent('kova:search', {detail: q}));
+
+      const isMenu = document.querySelector('.menu-grid') || document.querySelector('.grid') || location.pathname.includes('menu');
       if(!isMenu){
         const menuLink = document.querySelector('[data-view="menu"]');
         if(menuLink) menuLink.click();
@@ -90,7 +271,7 @@ export const Topbar = {
     };
 
     const filterCards = (q) => {
-      const cards = document.querySelectorAll('.card');
+      const cards = document.querySelectorAll('.k-card, .card');
       if(!cards.length){
         setTimeout(() => filterCards(q), 300);
         return;
@@ -100,7 +281,7 @@ export const Topbar = {
       let exactMatch = null;
 
       cards.forEach(card => {
-        const title = (card.querySelector('.card-title')?.textContent || '').toLowerCase();
+        const title = (card.querySelector('.card-title')?.textContent || card.textContent || '').toLowerCase();
         const desc = (card.querySelector('.card-desc')?.textContent || '').toLowerCase();
         const full = title + ' ' + desc;
 
@@ -147,16 +328,16 @@ export const Topbar = {
       input.focus();
     });
 
-    if(savedQ && (document.querySelector('.grid') || location.pathname.includes('menu'))){
+    if(savedQ && (document.querySelector('.grid') || document.querySelector('.menu-grid') || location.pathname.includes('menu'))){
       setTimeout(() => filterCards(savedQ.toLowerCase()), 500);
     }
 
     const observer = new MutationObserver(() => {
       const q = input.value.trim().toLowerCase();
-      if(q && document.querySelector('.grid')){
+      if(q && (document.querySelector('.grid') || document.querySelector('.menu-grid'))){
         filterCards(q);
       }
     });
-    observer.observe(document.getElementById('app-view') || document.body, { childList:true, subtree:true });
+    observer.observe(document.getElementById('app') || document.body, { childList:true, subtree:true });
   }
 };

@@ -1,4 +1,4 @@
-// KOVA - Our Story View - FLAME SMOKE STONE - LOCKED COLORS BALANCED
+// KOVA - Our Story View - FLAME SMOKE STONE - LOCKED COLORS BALANCED - MOBILE LOCKED CENTER UNDRAGABLE VERTICAL ONLY
 export const Story = {
   async render() {
     return `
@@ -10,6 +10,7 @@ export const Story = {
           background:var(--bg-app);
           box-sizing:border-box;
           overflow-x:clip;
+          touch-action:pan-y;
         }
         .story-inner{
           max-width:1100px;
@@ -35,16 +36,40 @@ export const Story = {
         .story-card.stone{ border-left:3px solid var(--text-main); }
 
         @media (max-width: 768px) {
+          html, body {
+            overflow-x:hidden !important;
+            max-width:100vw !important;
+            position:relative !important;
+            overscroll-behavior-x:none !important;
+            touch-action:pan-y !important;
+          }
+          #app {
+            overflow-x:hidden !important;
+            overscroll-behavior-x:none !important;
+            touch-action:pan-y !important;
+          }
           .kova-story-root{
-            margin:-16px !important;
+            margin:0 !important;
+            margin-left:-16px !important;
+            margin-right:-16px !important;
+            margin-top:-16px !important;
             width:calc(100% + 32px) !important;
             min-width:calc(100% + 32px) !important;
+            max-width:calc(100% + 32px) !important;
+            overflow-x:clip !important;
+            touch-action:pan-y !important;
+            overscroll-behavior-x:none !important;
           }
           .story-hero{
             height:62vh !important;
             min-height:420px !important;
             padding:24px 20px !important;
             border-radius:0 0 16px 16px !important;
+            width:100% !important;
+            max-width:100% !important;
+            box-sizing:border-box !important;
+            overflow:hidden !important;
+            touch-action:pan-y !important;
           }
           .story-hero h1{
             font-size:36px !important;
@@ -54,19 +79,34 @@ export const Story = {
           .story-inner{
             padding-left:20px !important;
             padding-right:20px !important;
+            width:100% !important;
+            max-width:100% !important;
+            box-sizing:border-box !important;
+            overflow-x:hidden !important;
+            touch-action:pan-y !important;
           }
           .story-content-wrap{
             padding:40px 20px 90px 20px !important;
+            width:100% !important;
+            max-width:100% !important;
+            box-sizing:border-box !important;
+            overflow-x:hidden !important;
           }
           .story-grid{
             grid-template-columns:1fr !important;
             gap:28px !important;
+            width:100% !important;
+            max-width:100% !important;
+            overflow-x:hidden !important;
           }
           .story-stats{
             gap:20px !important;
             flex-wrap:wrap;
+            width:100% !important;
+            overflow-x:hidden !important;
           }
           .story-stats div{ min-width:70px; }
+          .story-card{width:100% !important;max-width:100% !important;box-sizing:border-box !important;min-width:0 !important}
         }
       </style>
 
@@ -129,5 +169,20 @@ export const Story = {
         </div>
       </div>
     `;
+  },
+
+  afterRender(){
+    // HARD LOCK HORIZONTAL DRAG - VERTICAL ONLY
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.maxWidth = '100vw';
+    document.body.style.touchAction = 'pan-y';
+    document.body.style.overscrollBehaviorX = 'none';
+    const app = document.getElementById('app');
+    if(app){
+      app.style.overflowX = 'hidden';
+      app.style.touchAction = 'pan-y';
+      app.style.overscrollBehaviorX = 'none';
+    }
   }
 };
