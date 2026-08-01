@@ -1,4 +1,4 @@
-// KOVA Guest Orders - PREMIUM - MOBILE LOCKED - USES recommendation.js
+// KOVA Guest Orders - PREMIUM - MOBILE LOCKED CENTER - NO H-DRAG
 import { Recommendations } from '../components/recommendation.js';
 
 export const Orders = {
@@ -7,64 +7,95 @@ export const Orders = {
   async render(){
     return `
       <style>
-        html,body{overflow-x:hidden;max-width:100vw}
-        .orders-root{margin:-24px;width:calc(100% + 48px);min-width:calc(100% + 48px);background:var(--bg-app);box-sizing:border-box;min-height:100vh;overflow-x:hidden;touch-action:pan-y;overscroll-behavior-x:none}
-        .orders-inner{max-width:1100px;margin:0 auto;padding:28px 40px 100px;overflow-x:hidden}
-        .order-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;transition:.25s}
-        .order-card.featured{border-color:var(--accent-2);box-shadow:0 0 0 1px rgba(255,78,31,.25),0 16px 32px rgba(0,0,0,.28)}
-        .order-card.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
-        .order-items{display:flex;gap:12px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
-        .order-items::-webkit-scrollbar{display:none}
-        .order-item{min-width:148px;background:var(--bg-app);border:1px solid var(--border);border-radius:14px;padding:12px;flex-shrink:0}
-        .status{font-size:10px;font-weight:900;padding:5px 12px;border-radius:999px;letter-spacing:.8px;text-transform:uppercase}
-        .status.pending{background:rgba(255,193,7,.15);color:#FFC107;border:1px solid rgba(255,193,7,.3)}
-        .status.preparing{background:rgba(255,78,31,.15);color:#FF4E1F;border:1px solid rgba(255,78,31,.3)}
-        .status.ready{background:rgba(56,189,248,.15);color:#38BDF8;border:1px solid rgba(56,189,248,.3)}
-        .status.delivered,.status.done{background:rgba(34,197,94,.15);color:#22C55E;border:1px solid rgba(34,197,94,.3)}
-        .timeline{display:flex;gap:8px;margin:14px 0;align-items:center}
-        .t-dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:var(--bg-app);color:var(--text-muted);flex-shrink:0}
-        .t-dot.active{background:var(--accent);color:#000;border-color:var(--accent)}
-        .t-dot.done{background:#22C55E;color:#fff;border-color:#22C55E}
-        .t-line{flex:1;height:2px;background:var(--border)}
-        .t-line.done{background:#22C55E}
-        .arivie-msg{background:linear-gradient(135deg,rgba(200,255,0,.14),rgba(255,78,31,.14));border:1px solid rgba(200,255,0,.25);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;margin-bottom:16px}
-        .prev-toggle{background:var(--bg-card);border:1px dashed var(--border);border-radius:14px;padding:14px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;font-weight:800;margin-top:12px}
-        #ordersHistory{max-height:600px;overflow-y:auto;overflow-x:hidden;margin-top:14px}
-        .discount-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
-        .kova-mobile-filler{display:block;margin-top:20px}
-@media(max-width:768px){
-  .orders-root{margin:0;margin-left:-16px;margin-right:-16px;width:calc(100% + 32px);min-width:calc(100% + 32px)}
-  .orders-inner{padding:16px 12px 100px;max-width:100vw;box-sizing:border-box}
-  .discount-row{grid-template-columns:1fr}
-  .kova-mobile-filler{margin-top:16px}
-}
+  html,body{overflow-x:clip !important;max-width:100vw;overscroll-behavior-x:none}
+  #app{overflow-x:clip !important;max-width:100vw;overscroll-behavior-x:none;touch-action:pan-y}
+  .orders-root{
+    margin:-24px;width:calc(100% + 48px);min-width:calc(100% + 48px);
+    background:var(--bg-app);box-sizing:border-box;min-height:100vh;
+    overflow-x:clip;
+    touch-action:pan-y;
+    overscroll-behavior-x:none;
+    position:relative;
+  }
+  .orders-inner{max-width:1100px;margin:0 auto;padding:28px 40px 100px;overflow-x:clip}
+  /* the rest keep exactly as you had */
+  .order-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;transition:.25s}
+  .order-card.featured{border-color:var(--accent-2);box-shadow:0 0 0 1px rgba(255,78,31,.25),0 16px 32px rgba(0,0,0,.28)}
+  .order-card.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .order-items{display:flex;gap:12px;overflow-x:auto;padding:10px 0;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .order-items::-webkit-scrollbar{display:none}
+  .order-item{min-width:148px;background:var(--bg-app);border:1px solid var(--border);border-radius:14px;padding:12px;flex-shrink:0}
+  .status{font-size:10px;font-weight:900;padding:5px 12px;border-radius:999px;letter-spacing:.8px;text-transform:uppercase}
+  .status.pending{background:rgba(255,193,7,.15);color:#FFC107;border:1px solid rgba(255,193,7,.3)}
+  .status.preparing{background:rgba(255,78,31,.15);color:#FF4E1F;border:1px solid rgba(255,78,31,.3)}
+  .status.ready{background:rgba(56,189,248,.15);color:#38BDF8;border:1px solid rgba(56,189,248,.3)}
+  .status.delivered,.status.done{background:rgba(34,197,94,.15);color:#22C55E;border:1px solid rgba(34,197,94,.3)}
+  .timeline{display:flex;gap:8px;margin:14px 0;align-items:center}
+  .t-dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:var(--bg-app);color:var(--text-muted);flex-shrink:0}
+  .t-dot.active{background:var(--accent);color:#000;border-color:var(--accent)}
+  .t-dot.done{background:#22C55E;color:#fff;border-color:#22C55E}
+  .t-line{flex:1;height:2px;background:var(--border)}
+  .t-line.done{background:#22C55E}
+  .arivie-msg{background:linear-gradient(135deg,rgba(200,255,0,.14),rgba(255,78,31,.14));border:1px solid rgba(200,255,0,.25);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;margin-bottom:16px}
+  .prev-toggle{background:var(--bg-card);border:1px dashed var(--border);border-radius:14px;padding:14px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;font-weight:800;margin-top:12px}
+  #ordersHistory{max-height:600px;overflow-y:auto;overflow-x:hidden;margin-top:14px}
+  .discount-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+  .kova-mobile-filler{display:block;margin-top:20px}
+
+  @media(max-width:768px){
+    html,body,#app{overflow-x:clip !important}
+    .orders-root{
+      margin:0;margin-left:-16px;margin-right:-16px;
+      width:calc(100% + 32px);min-width:calc(100% + 32px);
+      overflow-x:clip;
+      touch-action:pan-y;
+      overscroll-behavior-x:none;
+    }
+    .orders-inner{padding:16px 12px 100px;max-width:100vw;box-sizing:border-box;overflow-x:clip}
+    .discount-row{grid-template-columns:1fr}
+    .kova-mobile-filler{margin-top:16px}
+  }
+</style>
 
       </style>
       <div class="orders-root">
         <div class="orders-inner">
-          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;gap:12px;flex-wrap:wrap">
-            <div>
-              <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0">My Orders <span id="ordersCount" style="font-size:12px;color:var(--text-muted)"></span></h1>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;gap:12px;flex-wrap:wrap;max-width:100%">
+            <div style="min-width:0">
+              <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">My Orders <span id="ordersCount" style="font-size:12px;color:var(--text-muted)"></span></h1>
               <p style="color:var(--text-muted);font-size:12.5px;margin-top:5px">Latest pinned on top</p>
             </div>
-            <button onclick="location.hash='#/menu'" style="background:var(--accent);color:#000;border:0;padding:11px 20px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer">Order More +</button>
+            <button onclick="location.hash='#/menu'" style="background:var(--accent);color:#000;border:0;padding:11px 20px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;flex-shrink:0">Order More +</button>
           </div>
-          <div id="arivieBox"></div>
-          <div id="lastOrderBox"></div>
-          <div id="recBox"></div>
-          <div id="discountBox"></div>
-          <div id="mobileFiller"></div>
-          <div id="historySection" style="display:none">
+          <div id="arivieBox" style="max-width:100%"></div>
+          <div id="lastOrderBox" style="max-width:100%"></div>
+          <div id="recBox" style="max-width:100%;overflow:hidden"></div>
+          <div id="discountBox" style="max-width:100%"></div>
+          <div id="mobileFiller" style="max-width:100%"></div>
+          <div id="historySection" style="display:none;max-width:100%">
             <div class="prev-toggle" id="toggleHistory">↓ Show previous (<span id="prevCount">0</span>)</div>
             <div id="ordersHistory" style="display:none"></div>
           </div>
-          <div id="ordersList" style="min-height:200px;display:grid;place-items:center;color:var(--text-muted)">Loading from D1...</div>
+          <div id="ordersList" style="min-height:200px;display:grid;place-items:center;color:var(--text-muted);max-width:100%">Loading from D1...</div>
         </div>
       </div>
     `;
   },
 
   async afterRender(){
+    document.documentElement.style.overflowX='hidden';
+    document.body.style.overflowX='hidden';
+    document.body.style.maxWidth='100vw';
+    document.body.style.touchAction='pan-y';
+    document.body.style.overscrollBehaviorX='none';
+    const app=document.getElementById('app');
+    if(app){
+      app.style.overflowX='hidden';
+      app.style.touchAction='pan-y';
+      app.style.overscrollBehaviorX='none';
+      app.style.maxWidth='100vw';
+    }
+
     const token=localStorage.getItem('kova_token');
     const listEl=document.getElementById('ordersList');
     const lastBox=document.getElementById('lastOrderBox');
@@ -76,9 +107,9 @@ export const Orders = {
     const historyEl=document.getElementById('ordersHistory');
 
     if(!token){
-      listEl.innerHTML=`<div style="text-align:center;padding:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px">🔒 Sign in to see orders<br><button onclick="location.hash='#/auth'" style="margin-top:14px;background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:900">Sign In</button></div>`;
-      try{ 
-        recBox.innerHTML=await Recommendations.render({title:'Trending Now',count:6,showDiscount:true}); 
+      listEl.innerHTML=`<div style="text-align:center;padding:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;max-width:100%">🔒 Sign in to see orders<br><button onclick="location.hash='#/auth'" style="margin-top:14px;background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:900">Sign In</button></div>`;
+      try{
+        recBox.innerHTML=await Recommendations.render({title:'Trending Now',count:6,showDiscount:true});
         Recommendations.attachEvents && Recommendations.attachEvents();
       }catch(e){ recBox.innerHTML=''; }
       this.renderMobileFiller(mobileFiller);
@@ -103,12 +134,12 @@ export const Orders = {
       const st=(latest.status||'pending').toLowerCase();
       const map={pending:['✨','We got your order!','Kitchen will start soon'],preparing:['👨‍🍳','Arivie - Preparing','Chef is on it! 15-20 min'],ready:['🛎️','Ready!','Rider nearby'],delivered:['⭐','Delivered - Enjoy!','Rate us?'],done:['⭐','Delivered - Enjoy!','Rate us?']};
       const m=map[st]||map.pending;
-      arivieBox.innerHTML=`<div class="arivie-msg"><div style="font-size:26px">${m[0]}</div><div><div style="font-weight:900;font-size:13px">${m[1]}</div><div style="font-size:12px;color:var(--text-muted)">${m[2]}</div></div></div>`;
+      arivieBox.innerHTML=`<div class="arivie-msg"><div style="font-size:26px;flex-shrink:0">${m[0]}</div><div style="min-width:0"><div style="font-weight:900;font-size:13px">${m[1]}</div><div style="font-size:12px;color:var(--text-muted)">${m[2]}</div></div></div>`;
 
       lastBox.innerHTML=this.cardHTML(latest,true);
       const excludeIds=(()=>{try{return JSON.parse(latest.items).map(i=>i.id||i.item_id)}catch{return[]}})();
-      try{ 
-        recBox.innerHTML=await Recommendations.render({title:'Recommended For You',count:6,excludeIds,showDiscount:false}); 
+      try{
+        recBox.innerHTML=await Recommendations.render({title:'Recommended For You',count:6,excludeIds,showDiscount:false});
         Recommendations.attachEvents && Recommendations.attachEvents();
       }catch{ recBox.innerHTML=''; }
 
@@ -117,7 +148,7 @@ export const Orders = {
         const randomDish = allDishes[Math.floor(Math.random()*allDishes.length)] || {image:'', title:'KOVA Special Noodles'};
         const trendBg = randomDish.image || randomDish.img || randomDish.image_url || 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600';
         const trendName = randomDish.title || randomDish.name || 'KOVA Special Noodles';
-        return `<div class="discount-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        return `<div class="discount-row">
           <div style="background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:16px;padding:16px;color:#000">
             <div style="font-weight:900">FLAT 20% OFF</div>
             <div style="font-size:11px;opacity:.85">Above AED 80 • CODE: KOVA20</div>
@@ -150,17 +181,17 @@ export const Orders = {
     if(!el) return;
     el.innerHTML = `
       <div class="kova-mobile-filler">
-        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:18px;position:relative;overflow:hidden">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-weight:900;color:#000">K</div>
-            <div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:18px;position:relative;overflow:hidden;max-width:100%">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;max-width:100%">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-weight:900;color:#000;flex-shrink:0">K</div>
+            <div style="min-width:0">
               <div style="font-weight:900;font-size:13px">Your ember is safe</div>
               <div style="font-size:11px;color:var(--text-muted)">D1 Synced • No data loss</div>
             </div>
-            <div style="margin-left:auto;font-size:10px;background:rgba(34,197,94,.12);color:#22C55E;border:1px solid rgba(34,197,94,.25);padding:4px 8px;border-radius:999px;font-weight:800">● LIVE</div>
+            <div style="margin-left:auto;font-size:10px;background:rgba(34,197,94,.12);color:#22C55E;border:1px solid rgba(34,197,94,.25);padding:4px 8px;border-radius:999px;font-weight:800;flex-shrink:0">● LIVE</div>
           </div>
           <div style="font-size:12px;line-height:1.6;color:var(--text-muted)">
-            Thanks for ordering from KOVA. Every fire starts with one ember. 
+            Thanks for ordering from KOVA. Every fire starts with one ember.
             <span style="color:var(--text-main);font-weight:700">Chef's tip:</span> Add a cold drink with your flame — it balances the char.
             <br><br>
             Stuck? Your cart & wishlist auto-sync across devices. Just sign in.
@@ -181,12 +212,12 @@ export const Orders = {
     const raw=(o.status||'pending').toLowerCase(); const status=raw==='done'?'delivered':raw;
     const steps=['pending','preparing','ready','delivered']; const curIdx=steps.indexOf(status);
     return `<div class="order-card ${featured?'featured':''}">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <div style="display:flex;gap:8px;align-items:center"><div style="font-weight:900">#${o.id.slice(0,8).toUpperCase()}</div><span class="status ${status}">${status}</span><span style="font-size:11px;color:var(--text-muted)">• ${date}</span></div>
-        <div style="display:flex;gap:8px;align-items:center"><div style="font-weight:900">AED ${Number(o.total).toFixed(2)}</div><button onclick="Orders.orderAgain('${o.id}')" style="background:var(--bg-app);border:1px solid var(--border);padding:6px 12px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer">Order Again</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;max-width:100%">
+        <div style="display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap"><div style="font-weight:900">#${o.id.slice(0,8).toUpperCase()}</div><span class="status ${status}">${status}</span><span style="font-size:11px;color:var(--text-muted)">• ${date}</span></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-shrink:0"><div style="font-weight:900">AED ${Number(o.total).toFixed(2)}</div><button onclick="Orders.orderAgain('${o.id}')" style="background:var(--bg-app);border:1px solid var(--border);padding:6px 12px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer">Order Again</button></div>
       </div>
       <div class="timeline">${steps.map((s,i)=>{const done=i<curIdx,active=i===curIdx; return `<div class="t-dot ${done?'done':''} ${active?'active':''}">${done?'✓':i+1}</div>${i<3?`<div class="t-line ${done?'done':''}"></div>`:''}`}).join('')}</div>
-      <div style="display:flex;gap:10px;overflow-x:auto;padding:4px 0">${items.map(it=>`<div class="order-item"><div style="font-weight:700;font-size:11px">${it.title||it.name}</div><div style="font-size:10px;color:var(--text-muted)">x${it.qty} · AED ${it.price}</div></div>`).join('')}</div>
+      <div style="display:flex;gap:10px;overflow-x:auto;padding:4px 0;overscroll-behavior-x:contain;scrollbar-width:none">${items.map(it=>`<div class="order-item"><div style="font-weight:700;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px">${it.title||it.name}</div><div style="font-size:10px;color:var(--text-muted)">x${it.qty} · AED ${it.price}</div></div>`).join('')}</div>
     </div>`;
   },
 
