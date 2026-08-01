@@ -1,4 +1,4 @@
-// KOVA Router - HASH ONLY - FINAL - WORKS BOTH LOCAL + LIVE
+// KOVA Router - HASH ONLY - FINAL - Orders in views, Settings + Recommendation in components
 import { Home } from '../views/home.js';
 import { Menu } from '../views/menu.js';
 import { Staff } from '../views/staff.js';
@@ -6,16 +6,18 @@ import { Admin } from '../views/admin.js';
 import { Story } from '../views/story.js';
 import { Auth } from '../views/auth.js';
 import { Orders } from '../views/orders.js';
+import { Settings } from '../components/settings.js';
 
 
 const routes = {
-  '/': Home, '/home': Home, '': Home, 'home': Home, 'index.html': Home,
+  '/': Home, '/home': Home, 'home': Home, 'index.html': Home,
   '/menu': Menu, 'menu': Menu,
   '/story': Story, 'story': Story,
   '/staff': Staff, 'staff': Staff,
   '/admin': Admin, 'admin': Admin,
   '/auth': Auth, 'auth': Auth,
   '/orders': Orders, 'orders': Orders,
+  '/settings': Settings, 'settings': Settings,
   '/help': Story, 'help': Story,
   '/contact': Story, 'contact': Story,
 };
@@ -45,7 +47,8 @@ export const Router = {
     app.innerHTML = `<div style="padding:40px;color:#888">Loading ${path}...</div>`;
     setTimeout(async () => {
       try {
-        app.innerHTML = await View.render();
+        const html = await View.render();
+        if (html) app.innerHTML = html;
         if (View.afterRender) await View.afterRender();
         if (View.attachEvents) await View.attachEvents();
         if (View.bind) await View.bind();
@@ -65,6 +68,7 @@ window.navigate = (path) => {
 };
 window.kovaGoOrders = () => navigate('orders');
 window.kovaGoAuth = () => navigate('auth');
+window.kovaGoSettings = () => navigate('settings');
 window.kovaGoMenu = (filter) => {
   sessionStorage.setItem('kova_filter', filter||'All');
   navigate('menu');

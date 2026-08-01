@@ -29,7 +29,8 @@ export const Menu = {
       } else this.dishes = [...this.menuData];
     } catch(e){ this.dishes = [...this.menuData]; }
 
-    // D1 SAFE - if guest logged in, load his cart/wish from D1 so it never gets lost across devices
+    try{ localStorage.setItem('kova_menu_cache', JSON.stringify(this.dishes)); }catch{}
+
     const token = localStorage.getItem('kova_token');
     if(token){
       try{
@@ -45,7 +46,7 @@ export const Menu = {
             localStorage.setItem('kova_wish', JSON.stringify(this.wishlist));
           }
         }
-      }catch(e){ /* keep local fallback */ }
+      }catch(e){}
     }
 
     const urlParams = new URLSearchParams(location.search);
@@ -59,61 +60,12 @@ export const Menu = {
 
     return `
       <style>
-      /* OVERRIDE APP PADDING FOR TRUE DOCKING */
       #app{padding-top:0 !important}
-      .menu-wrap{
-        max-width:1300px;
-        margin:0 auto;
-        padding:0 24px 80px 24px;
-        box-sizing:border-box;
-        overflow:visible;
-      }
-      .menu-head{
-        padding:20px 0 12px 0;
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        box-sizing:border-box;
-        flex-wrap:wrap;
-        gap:10px;
-      }
-      /* STICKY PILL BAR - DOCKED TO NAV */
-      .filter-bar{
-        position:sticky;
-        top:0;
-        z-index:40;
-        background:rgba(10,10,11,0.88);
-        backdrop-filter:blur(18px);
-        -webkit-backdrop-filter:blur(18px);
-        border-bottom:1px solid var(--border);
-        margin:0 -24px;
-        padding:12px 24px;
-        display:flex;
-        gap:8px;
-        align-items:center;
-        overflow-x:auto;
-        overflow-y:hidden;
-        white-space:nowrap;
-        scrollbar-width:none;
-        -webkit-overflow-scrolling:touch;
-        overscroll-behavior-x:contain;
-        touch-action:pan-x;
-        will-change:transform;
-      }
+      .menu-wrap{max-width:1300px;margin:0 auto;padding:0 24px 80px 24px;box-sizing:border-box;overflow:visible}
+      .menu-head{padding:20px 0 12px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+      .filter-bar{position:sticky;top:0;z-index:40;background:rgba(10,10,11,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border);margin:0 -24px;padding:12px 24px;display:flex;gap:8px;align-items:center;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;will-change:transform}
       .filter-bar::-webkit-scrollbar{display:none}
-      .filter-chip{
-        flex-shrink:0;
-        white-space:nowrap;
-        padding:8px 14px;
-        border-radius:999px;
-        border:1px solid var(--border);
-        font-weight:700;
-        font-size:11px;
-        cursor:pointer;
-        transition:.18s ease;
-        background:var(--bg-card);
-        color:var(--text-muted);
-      }
+      .filter-chip{flex-shrink:0;white-space:nowrap;padding:8px 14px;border-radius:999px;border:1px solid var(--border);font-weight:700;font-size:11px;cursor:pointer;transition:.18s ease;background:var(--bg-card);color:var(--text-muted)}
       .filter-chip.active{background:var(--text-main);color:var(--bg-app);border-color:var(--text-main)}
       .filter-chip.idle{background:var(--bg-card);color:var(--text-muted)}
       .filter-chip:hover{border-color:var(--text-muted);transform:translateY(-1px)}
@@ -121,37 +73,14 @@ export const Menu = {
       .k-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:.2s;position:relative;min-width:0;max-width:100%;box-sizing:border-box}
       .k-card:hover{border-color:#3a3a3e;transform:translateY(-2px)}
       .cart-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text-main);color:var(--bg-app);padding:12px 20px;border-radius:999px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,0.4);z-index:60;max-width:90vw}
-
       @media(max-width:768px){
         html, body { overflow-x:hidden!important; max-width:100vw!important; }
         #app{padding-left:0 !important;padding-right:0 !important}
-        .menu-wrap{
-          padding:0 12px 80px 12px!important;
-          margin:0 auto!important;
-          width:100%!important;
-          max-width:100%!important;
-          box-sizing:border-box!important;
-          overflow:visible !important;
-        }
+        .menu-wrap{padding:0 12px 80px 12px!important;margin:0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:visible!important}
         .menu-head{padding:16px 12px 10px 12px !important}
-        .filter-bar{
-          margin:0 -12px!important;
-          padding:12px 12px!important;
-          width:calc(100% + 24px)!important;
-          max-width:100vw!important;
-          box-sizing:border-box!important;
-          top:0 !important;
-          background:rgba(10,10,11,0.94) !important;
-        }
-        .menu-grid{
-          grid-template-columns:1fr!important;
-          gap:12px!important;
-          width:100%!important;
-          padding:0 0px;
-        }
-        @media(min-width:430px) and (max-width:768px){
-         .menu-grid{grid-template-columns:repeat(2,1fr)!important}
-        }
+        .filter-bar{margin:0 -12px!important;padding:12px 12px!important;width:calc(100% + 24px)!important;max-width:100vw!important;box-sizing:border-box!important;top:0!important;background:rgba(10,10,11,0.94)!important}
+        .menu-grid{grid-template-columns:1fr!important;gap:12px!important;width:100%!important}
+        @media(min-width:430px) and (max-width:768px){ .menu-grid{grid-template-columns:repeat(2,1fr)!important} }
         .k-card{width:100%!important;max-width:100%!important;min-width:0!important}
       }
       </style>
