@@ -1,4 +1,4 @@
-// KOVA Guest Orders - PREMIUM - MOBILE LOCKED - USES recommendation.js
+// KOVA Guest Orders - PREMIUM - MOBILE LOCKED CENTER - NO SIDE DRAG - ORIGINAL + FIX ONLY
 import { Recommendations } from '../components/recommendation.js';
 
 export const Orders = {
@@ -7,13 +7,14 @@ export const Orders = {
   async render(){
     return `
       <style>
-        html,body{overflow-x:hidden;max-width:100vw}
-        .orders-root{margin:-24px;width:calc(100% + 48px);min-width:calc(100% + 48px);background:var(--bg-app);box-sizing:border-box;min-height:100vh;overflow-x:hidden;touch-action:pan-y;overscroll-behavior-x:none}
-        .orders-inner{max-width:1100px;margin:0 auto;padding:28px 40px 100px;overflow-x:hidden}
+        html,body{overflow-x:clip;max-width:100vw;overscroll-behavior-x:none}
+        #app{overflow-x:clip;max-width:100vw;overscroll-behavior-x:none;touch-action:pan-y}
+        .orders-root{margin:-24px;width:calc(100% + 48px);min-width:calc(100% + 48px);background:var(--bg-app);box-sizing:border-box;min-height:100vh;overflow-x:clip;touch-action:pan-y;overscroll-behavior-x:none;position:relative}
+        .orders-inner{max-width:1100px;margin:0 auto;padding:28px 40px 100px;overflow-x:clip}
         .order-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;transition:.25s}
         .order-card.featured{border-color:var(--accent-2);box-shadow:0 0 0 1px rgba(255,78,31,.25),0 16px 32px rgba(0,0,0,.28)}
         .order-card.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
-        .order-items{display:flex;gap:12px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
+        .order-items{display:flex;gap:12px;overflow-x:auto;padding:10px 0;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
         .order-items::-webkit-scrollbar{display:none}
         .order-item{min-width:148px;background:var(--bg-app);border:1px solid var(--border);border-radius:14px;padding:12px;flex-shrink:0}
         .status{font-size:10px;font-weight:900;padding:5px 12px;border-radius:999px;letter-spacing:.8px;text-transform:uppercase}
@@ -32,13 +33,14 @@ export const Orders = {
         #ordersHistory{max-height:600px;overflow-y:auto;overflow-x:hidden;margin-top:14px}
         .discount-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
         .kova-mobile-filler{display:block;margin-top:20px}
-@media(max-width:768px){
-  .orders-root{margin:0;margin-left:-16px;margin-right:-16px;width:calc(100% + 32px);min-width:calc(100% + 32px)}
-  .orders-inner{padding:16px 12px 100px;max-width:100vw;box-sizing:border-box}
-  .discount-row{grid-template-columns:1fr}
-  .kova-mobile-filler{margin-top:16px}
-}
-
+        @media(max-width:768px){
+          .orders-root{margin:0;margin-left:-16px;margin-right:-16px;width:calc(100% + 32px);min-width:calc(100% + 32px);overflow-x:clip;touch-action:pan-y;overscroll-behavior-x:none}
+          .orders-inner{padding:16px 12px 100px;max-width:100vw;box-sizing:border-box;overflow-x:clip}
+          .discount-row{grid-template-columns:1fr}
+          .kova-mobile-filler{margin-top:16px}
+          #recBox{overflow-x:clip}
+          #recBox > div{overflow-x:auto !important;overscroll-behavior-x:contain !important;touch-action:pan-y pan-x !important}
+        }
       </style>
       <div class="orders-root">
         <div class="orders-inner">
@@ -77,8 +79,8 @@ export const Orders = {
 
     if(!token){
       listEl.innerHTML=`<div style="text-align:center;padding:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px">🔒 Sign in to see orders<br><button onclick="location.hash='#/auth'" style="margin-top:14px;background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:900">Sign In</button></div>`;
-      try{ 
-        recBox.innerHTML=await Recommendations.render({title:'Trending Now',count:6,showDiscount:true}); 
+      try{
+        recBox.innerHTML=await Recommendations.render({title:'Trending Now',count:6,showDiscount:true});
         Recommendations.attachEvents && Recommendations.attachEvents();
       }catch(e){ recBox.innerHTML=''; }
       this.renderMobileFiller(mobileFiller);
@@ -107,8 +109,8 @@ export const Orders = {
 
       lastBox.innerHTML=this.cardHTML(latest,true);
       const excludeIds=(()=>{try{return JSON.parse(latest.items).map(i=>i.id||i.item_id)}catch{return[]}})();
-      try{ 
-        recBox.innerHTML=await Recommendations.render({title:'Recommended For You',count:6,excludeIds,showDiscount:false}); 
+      try{
+        recBox.innerHTML=await Recommendations.render({title:'Recommended For You',count:6,excludeIds,showDiscount:false});
         Recommendations.attachEvents && Recommendations.attachEvents();
       }catch{ recBox.innerHTML=''; }
 
@@ -160,7 +162,7 @@ export const Orders = {
             <div style="margin-left:auto;font-size:10px;background:rgba(34,197,94,.12);color:#22C55E;border:1px solid rgba(34,197,94,.25);padding:4px 8px;border-radius:999px;font-weight:800">● LIVE</div>
           </div>
           <div style="font-size:12px;line-height:1.6;color:var(--text-muted)">
-            Thanks for ordering from KOVA. Every fire starts with one ember. 
+            Thanks for ordering from KOVA. Every fire starts with one ember.
             <span style="color:var(--text-main);font-weight:700">Chef's tip:</span> Add a cold drink with your flame — it balances the char.
             <br><br>
             Stuck? Your cart & wishlist auto-sync across devices. Just sign in.
