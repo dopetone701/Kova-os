@@ -36,6 +36,70 @@ export const Settings = {
        .loc-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg-app);border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:600}
        .loc-dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
        .far-alert{background:rgba(255,193,7,.15);border:1px solid rgba(255,193,7,.4);color:#ffc107;border-radius:12px;padding:12px 14px;font-size:13px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+
+       /* === SETTINGS LIGHT FIX - ADDITIVE === */
+[data-theme="light"] body, [data-theme="light"] #app{
+  background: #E6DFD3 !important;
+}
+[data-theme="light"] .st-wrap{
+  background: #E6DFD3 !important;
+  max-width: 760px !important;
+  margin: 24px auto !important;
+}
+
+/* All cards stay DARK in light - no white */
+[data-theme="light"] .st-card{
+  background: #1C1C1F !important;
+  border: 1px solid #27272A !important;
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .st-card b,
+[data-theme="light"] .st-card .st-lbl{
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .st-card .st-sub,
+[data-theme="light"] .st-card div[style*="color:var(--text-muted)"]{
+  color: #A1A1AA !important;
+}
+
+/* Inputs - your screenshot shows white empty inputs */
+[data-theme="light"] .st-input{
+  background: #0A0A0B !important;
+  color: #F4F4F5 !important;
+  border-color: #27272A !important;
+}
+[data-theme="light"] .st-input::placeholder{
+  color: #71717A !important;
+}
+
+/* Buttons */
+[data-theme="light"] .st-btn{
+  background: #27272A !important;
+  color: #F4F4F5 !important;
+  border-color: #27272A !important;
+}
+[data-theme="light"] .st-btn.primary{
+  background: #C8FF00 !important;
+  color: #000 !important;
+}
+[data-theme="light"] .st-btn.danger{
+  background: rgba(255,78,31,0.15) !important;
+  color: #FF4E1F !important;
+  border-color: rgba(255,78,31,0.3) !important;
+}
+
+/* Location badge */
+[data-theme="light"] .loc-badge{
+  background: #0A0A0B !important;
+  border-color: #27272A !important;
+  color: #F4F4F5 !important;
+}
+
+/* Map */
+[data-theme="light"] #liveMap{
+  border-color: #27272A !important;
+}
+
       </style>
 
       <div class="st-wrap">

@@ -1,4 +1,4 @@
-// KOVA Admin OS — CLOUD R2 READY + BULK INJECTOR — DOPETONE PRO — EDIT FIXED + ADMIN LOCK D1 + GUEST ORDERS
+// KOVA Admin OS — CLOUD R2 READY + BULK INJECTOR — DOPETONE PRO — LIGHT FIXED
 import { api } from '../services/api.js';
 
 const WORKER_URL = 'https://kova-clean-api.dopetone701.workers.dev';
@@ -33,9 +33,96 @@ export const Admin = {
   render() {
     setTimeout(() => this.attachEvents(), 100);
     return `
-      <div style="max-width:1100px;margin:0 auto;padding:12px;">
+      <style>
+       .admin-root{max-width:1100px;margin:0 auto;padding:12px;box-sizing:border-box}
+       .menuLiveGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+        /* ===== LIGHT FIX - ADDITIVE ===== */
+        [data-theme="light"].admin-root{ background: #E6DFD3!important; min-height:100vh; border-radius:16px; }
+        [data-theme="light"].admin-root h2{ color: #121214!important; }
+        [data-theme="light"] #adminBadge{ background: #C8FF00!important; color: #000!important; border-color: #C8FF00!important; }
+        [data-theme="light"] button[data-tab]{ background: #fff!important; color: #6B6560!important; border-color: #D6D3D1!important; }
+        [data-theme="light"] button[data-tab].active-tab{ background: #121214!important; color: #fff!important; }
+        [data-theme="light"] #adminContent > div,
+        [data-theme="light"] #bulkZone,
+        [data-theme="light"] #menuLiveGrid > div,
+        [data-theme="light"] #ordersGrid > div,
+        [data-theme="light"] #adminContent div[style*="var(--bg-card)"]{ background: #1C1C1F!important; border-color: #27272A!important; color: #F4F4F5!important; }
+        [data-theme="light"] #menuLiveGrid b{ color: #F4F4F5!important; }
+        [data-theme="light"] #menuLiveGrid span{ color: #A1A1AA!important; }
+        [data-theme="light"] button[onclick*="editLive"]{ background: #F4F4F5!important; color: #121214!important; border:1px solid #E7E5E4!important; }
+        [data-theme="light"] button[onclick*="delLive"]{ background: #FF4E1F!important; color: #fff!important; }
+        [data-theme="light"] #bulkZone p{ color: #A1A1AA!important; }
+        [data-theme="light"] #bulkLog{ background: #0A0A0B!important; border-color: #27272A!important; color: #C8FF00!important; }
+        [data-theme="light"] #modalBox{ background: #1C1C1F!important; border-color: #27272A!important; color: #F4F4F5!important; }
+        [data-theme="light"] #modalBox input, [data-theme="light"] #modalBox textarea, [data-theme="light"] #modalBox select{ background: #0A0A0B!important; color: #F4F4F5!important; border-color: #27272A!important; }
+        [data-theme="light"] #ordersGrid div[style*="var(--bg-app)"]{ background: #0A0A0B!important; border-color: #27272A!important; }
+        [data-theme="light"] #btnBulk{ background: #121214!important; color: #fff!important; }
+        /* Admin granted notice orange in light */
+        [data-theme="light"] div[style*="rgba(200,255,0,0.08)"]{ background: rgba(255,78,31,0.12)!important; border-color: rgba(255,78,31,0.35)!important; color: #FF4E1F!important; }
+
+
+        /* === FINAL LIGHT WASH FIX === */
+[data-theme="light"] .admin-root{
+  background: #E6DFD3 !important;
+  min-height: 100vh !important;
+}
+[data-theme="light"] .admin-root h2{
+  color: #121214 !important;
+  -webkit-text-fill-color: #121214 !important;
+}
+[data-theme="light"] .admin-root h2 span{ color: #6B6560 !important; }
+
+/* Tabs - ORDERS STAFF were invisible in your screenshot */
+[data-theme="light"] button[data-tab]{
+  background: #FFFFFF !important;
+  color: #121214 !important;
+  border: 1px solid #D6D3D1 !important;
+  opacity: 1 !important;
+}
+[data-theme="light"] button[data-tab].active-tab{
+  background: #121214 !important;
+  color: #FFFFFF !important;
+  border-color: #121214 !important;
+}
+
+/* Yellow badge */
+[data-theme="light"] span[style*="CLOUD R2"]{
+  background: #C8FF00 !important;
+  color: #000 !important;
+}
+
+/* Cards stay dark */
+[data-theme="light"] #menuLiveGrid > div{
+  background: #1C1C1F !important;
+}
+
+
+/* FIX SECOND BG WITHIN GRID */
+[data-theme="light"] #adminContent{
+  background: transparent !important;
+}
+
+[data-theme="light"] #menuLiveGrid{
+  background: #E6DFD3 !important;
+  padding: 8px !important;
+  border-radius: 16px !important;
+}
+
+/* Each card dark - only ONE inner bg */
+[data-theme="light"] #menuLiveGrid > div{
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+}
+
+/* Remove any white from card content */
+[data-theme="light"] #menuLiveGrid > div > div:last-child{
+  background: #1C1C1F !important;
+}
+
+      </style>
+      <div class="admin-root">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-          <div style="display:flex;align-items:center;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
             <h2 style="font-size:28px;font-weight:900;color:var(--text-main)">Admin OS</h2>
             <span style="background:var(--accent);color:#000;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900;">CLOUD R2 + BULK + D1 GUESTS</span>
             <span id="adminBadge" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);padding:4px 10px;border-radius:99px;font-size:10px;font-weight:700;">Checking D1...</span>
@@ -48,7 +135,7 @@ export const Admin = {
 
         <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px;overflow-x:auto">
           ${['menu','orders','staff','reservations','hero'].map(t=>`
-            <button data-tab="${t}" style="padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:${this.activeTab===t?'var(--text-main)':'transparent'};color:${this.activeTab===t?'var(--bg-app)':'var(--text-muted)'};font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap">${t.toUpperCase()} ${t==='orders'?'🛒':''}</button>
+            <button data-tab="${t}" class="${this.activeTab===t?'active-tab':''}" style="padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:${this.activeTab===t?'var(--text-main)':'transparent'};color:${this.activeTab===t?'var(--bg-app)':'var(--text-muted)'};font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap">${t.toUpperCase()} ${t==='orders'?'🛒':''}</button>
           `).join('')}
         </div>
 
@@ -74,7 +161,7 @@ export const Admin = {
         <div style="margin-top:12px;display:flex;gap:8px"><button id="bulkQuick" style="flex:1;padding:10px;background:var(--bg-hover);color:var(--text-main);border:1px solid var(--border);border-radius:99px;font-weight:800">⚡ QUICK 10 DEMO</button></div>
         <div id="bulkLog" style="font-family:monospace;font-size:10px;text-align:left;background:#000;padding:10px;border-radius:8px;max-height:150px;overflow:auto;margin-top:10px;border:1px solid var(--border);color:#0f0">Ready. Drop elite plates bro.</div>
       </div>
-      <div id="menuLiveGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px"><div style="padding:20px;color:var(--text-muted)">Loading LIVE from D1...</div></div>`;
+      <div id="menuLiveGrid" class="menuLiveGrid"><div style="padding:20px;color:var(--text-muted)">Loading LIVE from D1...</div></div>`;
     }
     if(tab==='orders'){
       return `
@@ -220,14 +307,14 @@ export const Admin = {
       const bulkInput = document.getElementById('bulkInput');
       const bulkGrid = document.getElementById('bulkGrid');
       const bulkLog = document.getElementById('bulkLog');
-      const log = (m)=>{ if(bulkLog){ bulkLog.textContent += "\n"+m; bulkLog.scrollTop=9999; } }
+      const log = (m)=>{ if(bulkLog){ bulkLog.textContent += "\\n"+m; bulkLog.scrollTop=9999; } }
 
       bulkInput?.addEventListener('change', (e)=>{
         this.bulkFiles = [...this.bulkFiles,...Array.from(e.target.files)];
         bulkGrid.innerHTML = this.bulkFiles.map((f,i)=>`
           <div style="background:#000;border:1px solid var(--border);border-radius:8px;overflow:hidden">
             <img src="${URL.createObjectURL(f)}" style="width:100%;height:80px;object-fit:cover">
-            <div style="padding:4px;font-size:9px"><input class="bulkName" data-i="${i}" value="${f.name.replace(/\.[^/.]+$/,'').replace(/_/g,' ')}" style="width:100%;padding:4px;background:var(--bg-hover);color:var(--text-main);border:1px solid var(--border);border-radius:4px"></div>
+            <div style="padding:4px;font-size:9px"><input class="bulkName" data-i="${i}" value="${f.name.replace(/\\.[^/.]+$/,'').replace(/_/g,' ')}" style="width:100%;padding:4px;background:var(--bg-hover);color:var(--text-main);border:1px solid var(--border);border-radius:4px"></div>
           </div>
         `).join('');
         log(`Added ${e.target.files.length} images. Total ${this.bulkFiles.length}`);
@@ -274,7 +361,6 @@ export const Admin = {
       });
     }
 
-    
     document.getElementById('heroFile')?.addEventListener('change', async (e)=>{
       const file = e.target.files[0]; if(!file) return;
       try {

@@ -14,15 +14,15 @@
   --topbar-h: 72px;
 }
 
-/* LIGHT THEME - WARM PAPER + FIRE */
+/* LIGHT THEME - ONLY BG LIGHT, REST STAYS DARK */
 [data-theme="light"] {
-  --bg-app: #F7F3ED;
-  --bg-sidebar: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-hover: #F0EAE0;
-  --text-main: #121214;
-  --text-muted: #8B8680;
-  --border: #EAE2D6;
+  --bg-app: #ece8df;
+  --bg-sidebar: #121214;
+  --bg-card: #1C1C1F;
+  --bg-hover: #27272A;
+  --text-main: #F4F4F5;
+  --text-muted: #A1A1AA;
+  --border: #27272A;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -73,7 +73,6 @@ body.sb-open{ overflow:hidden; }
 }
 .nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
 .nav-item.active { background: var(--text-main); color: var(--bg-sidebar); }
-[data-theme="light"] .nav-item.active { background: #121214; color: #fff; }
 
 /* === ORANGE BALANCE START === */
 .nav-item[data-view="menu"]:hover{ color: var(--accent-2); }
@@ -175,13 +174,11 @@ body.sb-open{ overflow:hidden; }
   #sidebar-overlay{ display:none!important; }
 }
 
-/* LIGHT MODE FIXES */
-[data-theme="light"] .search-box { background:#fff; border-color:#EAE2D6; }
-[data-theme="light"] .btn-icon { background:#fff; border-color:#EAE2D6; }
-[data-theme="light"] .card { background:#fff !important; border-color:#EAE2D6 !important; box-shadow: 0 2px 12px rgba(0,0,0,0.04) !important; }
-[data-theme="light"] .card-body { background:#fff !important; }
-[data-theme="light"] .card-title { color:#121214 !important; }
-[data-theme="light"] .card-desc { color:#8B8680 !important; }
+/* LIGHT MODE OVERRIDES - ONLY BG LIGHT */
+[data-theme="light"] body { background: #ece8df !important; }
+[data-theme="light"] .app-view { background: #ece8df !important; }
+[data-theme="light"] .main-wrap { background: #ece8df !important; }
+[data-theme="light"] .kova-home-root { background: #ece8df !important; }
 
-
-
+/* Keep hero dark so JLT pill never washes */
+[data-theme="light"] .hero-fix { background-color: #0A0A0B !important; }

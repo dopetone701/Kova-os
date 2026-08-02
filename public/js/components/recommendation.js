@@ -89,6 +89,12 @@ export const Recommendations = {
       .kova-rec-meta{font-size:11px;color:var(--text-muted);margin-top:6px;display:flex;justify-content:space-between;align-items:center}
       .kova-rec-add{background:var(--accent);color:#000;border:0;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:800;cursor:pointer}
       .kova-rec-add.added{background:#F4F4F5}
+
+      /* Recommendations - LIGHT FIX - ONLY STYLE */
+
+[data-theme="light"] .kova-rec-title{ color: #121214!important; }
+
+
     </style>
     <div class="kova-rec-wrap">
       <div class="kova-rec-head">

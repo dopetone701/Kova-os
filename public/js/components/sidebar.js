@@ -30,20 +30,29 @@ export const Sidebar = {
     el.innerHTML=`
       <style>
       .logo-wrap{padding:28px 20px 16px}
-      .logo-wrap .logo{font-family:'Syne',sans-serif;font-weight:900;font-size:32px;letter-spacing:-1.5px;line-height:1;color:#fff}
-      .logo-wrap .logo .o-green{color:var(--accent) !important}
-      .logo-sub{font-size:12px;color:var(--text-muted);margin-top:6px}
-      .nav{padding:8px 12px;flex:1;overflow-y:auto}
-      .nav-item{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:.15s ease;cursor:pointer;border:1px solid transparent;margin-bottom:4px;user-select:none}
-      .nav-item:hover{background:var(--bg-hover);color:var(--text-main)}
-      .nav-item.active{background:var(--accent-2) !important;color:#fff !important;border-color:var(--accent-2) !important}
-      .nav-item.active svg{stroke:#fff !important}
-      .nav-item:hover:not(.active){color:var(--accent-2) !important;background:var(--bg-hover)}
-      .nav-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-left:auto;background:var(--accent-2);box-shadow:0 0 6px var(--accent-2)}
-      .sidebar-foot{padding:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
-      .btn-icon{background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);padding:10px 12px;border-radius:10px;font-size:12px;cursor:pointer}
-      .guest-mini{display:flex;gap:10px;align-items:center;padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:4px}
-      .guest-mini img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.logo-wrap .logo{font-family:'Syne',sans-serif;font-weight:900;font-size:32px;letter-spacing:-1.5px;line-height:1;color:#fff}
+.logo-wrap .logo .o-green{color:var(--accent) !important}
+.logo-sub{font-size:12px;color:var(--text-muted);margin-top:6px}
+.nav{padding:8px 12px;flex:1;overflow-y:auto}
+.nav-item{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:.15s ease;cursor:pointer;border:1px solid transparent;margin-bottom:4px;user-select:none}
+.nav-item:hover{background:var(--bg-hover);color:var(--text-main)}
+.nav-item.active{background:var(--accent-2) !important;color:#fff !important;border-color:var(--accent-2) !important}
+.nav-item.active svg{stroke:#fff !important}
+.nav-item:hover:not(.active){color:var(--accent-2) !important;background:var(--bg-hover)}
+.nav-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-left:auto;background:var(--accent-2);box-shadow:0 0 6px var(--accent-2)}
+.sidebar-foot{padding:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.btn-icon{background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);padding:10px 12px;border-radius:10px;font-size:12px;cursor:pointer}
+.guest-mini{display:flex;gap:10px;align-items:center;padding:10px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:4px}
+.guest-mini img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+/* LIGHT LOCK - SIDEBAR STAYS DARK */
+[data-theme="light"] #sidebar,.sidebar{background:#121214 !important;border-right-color:#27272A !important}
+[data-theme="light"] .logo-wrap .logo{color:#fff !important}
+[data-theme="light"] .nav-item{color:#A1A1AA !important}
+[data-theme="light"] .nav-item:hover{background:#27272A !important;color:#F4F4F5 !important}
+[data-theme="light"] .nav-item.active{background:#FF4E1F !important;color:#fff !important}
+[data-theme="light"] .sidebar-foot{border-top-color:#27272A !important}
+[data-theme="light"] .btn-icon,[data-theme="light"] .guest-mini{background:#1C1C1F !important;border-color:#27272A !important;color:#A1A1AA !important}
+
       </style>
       <div class="logo-wrap">
         <div class="logo">K<span class="o-green">O</span>VA</div>

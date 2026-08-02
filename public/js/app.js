@@ -2,15 +2,40 @@
 import { Sidebar } from './components/sidebar.js';
 import { Topbar } from './components/topbar.js';
 import { Router } from './router/index.js';
+import { Skeletons } from './skeletons/index.js';
 
 const GUEST_WORKER = 'https://kova-guest-sign-up.dopetone701.workers.dev';
+
+// SUNO SKELETON - SHOW INSTANTLY BEFORE BOOT
+function showSkeleton(){
+  const app = document.getElementById('app');
+  const sk = document.getElementById('kova-skeleton');
+  const target = sk || app;
+  if(target){
+    target.innerHTML = Skeletons.get(location.hash || '#/orders');
+  }
+}
+// show on first paint
+showSkeleton();
+window.addEventListener('hashchange', showSkeleton);
 
 function bootKOVA(){
   console.log('KOVA OS Booting... Backend: kova-main-api | D1 | KOVA-R2 | Guest Auth D1+R2');
   Sidebar.render();
   Topbar.render();
   Router.init();
-  // ... keep all the rest of your code inside here ...
+
+  // hook Router to hide skeleton after real render
+  const origInit = Router.init.bind(Router);
+  // when route changes, skeleton already shown, Router will replace #app content
+  const observer = new MutationObserver(()=>{
+    const sk = document.getElementById('kova-skeleton');
+    if(sk && sk.innerHTML.trim() !== '' && document.querySelector('.orders-root, .menu-root, .kova-rec-wrap')){
+      sk.innerHTML = ''; // real page rendered, clear skeleton wrapper
+    }
+  });
+  observer.observe(document.getElementById('app'), {childList:true, subtree:true});
+
   window.toggleTheme = () => {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
@@ -20,6 +45,7 @@ function bootKOVA(){
   };
   const saved = localStorage.getItem('kova-theme');
   if (saved) document.documentElement.setAttribute('data-theme', saved);
+  
   window.checkAdminAccess = async () => {
     const allowedEmails = ['owner@kova.ae', 'dopetone701@gmail.com'];
     try{
@@ -56,6 +82,7 @@ function bootKOVA(){
     try{ return JSON.parse(localStorage.getItem('kova_guest')||'null'); }catch{ return null; }
   };
   window.kovaIsAdmin = () => localStorage.getItem('kova_is_admin')==='1';
+  
   let overlay = document.getElementById('sidebar-overlay');
   if(!overlay){
     overlay = document.createElement('div');
@@ -63,7 +90,6 @@ function bootKOVA(){
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;display:none;opacity:0;transition:opacity .2s';
     document.body.appendChild(overlay);
   }
-  
   const getSb = () => document.getElementById('sidebar');
   window.closeSidebar = () => {
     const sb = getSb();
@@ -116,7 +142,6 @@ function bootKOVA(){
   });
 }
 
-// THIS IS THE FIX - runs even if DOM already loaded
 if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', bootKOVA);
 } else {

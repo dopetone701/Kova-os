@@ -3,7 +3,7 @@ export const Story = {
   async render() {
     return `
       <style>
-        .kova-story-root{margin:-24px !important;width:calc(100% + 48px) !important;min-width:calc(100% + 48px);background:var(--bg-app);box-sizing:border-box;overflow-x:clip;touch-action:pan-y}
+              .kova-story-root{margin:-24px !important;width:calc(100% + 48px) !important;min-width:calc(100% + 48px);background:var(--bg-app);box-sizing:border-box;overflow-x:clip;touch-action:pan-y}
         .story-inner{max-width:1100px;margin:0 auto;padding-left:40px;padding-right:40px;box-sizing:border-box;width:100%}
         .story-content-wrap{padding:70px 40px 110px 40px}
         .story-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:border-color .2s}
@@ -36,6 +36,31 @@ export const Story = {
           .mobile-kova .sub{font-size:11px;font-weight:500;margin-top:6px;color:rgba(255,255,255,0.75);white-space:nowrap}
           .pc-kova-closed{display:none !important}
         }
+        /* ===== LIGHT LOCK - FINAL - ONLY BG LIGHT ===== */
+        [data-theme="light"] .kova-story-root{ background: #ece8df !important; }
+        /* Story text on light - dark ink */
+        [data-theme="light"] .story-grid > div > p.ar{ color: #121214 !important; }
+        [data-theme="light"] .story-grid > div > div > p{ color: #3a3632 !important; }
+        [data-theme="light"] .story-grid > div > div > p b{ color: #121214 !important; }
+        [data-theme="light"] .story-stats div{ color: #121214 !important; }
+        [data-theme="light"] .story-stats div div[style*="color:var(--text-muted)"]{ color: #8B8680 !important; }
+        /* Cards always dark */
+        [data-theme="light"] .story-card{ background: #1C1C1F !important; border-color: #27272A !important; color: #F4F4F5 !important; }
+        [data-theme="light"] .story-card div{ color: #F4F4F5 !important; }
+        [data-theme="light"] .story-card div[style*="color:var(--text-muted)"]{ color: #A1A1AA !important; }
+        /* Owner grid always dark - fixes STACK/GITHUB wash */
+        [data-theme="light"] .owner-grid{ background: #1C1C1F !important; border-color: #27272A !important; }
+        [data-theme="light"] .owner-grid *{ color: #F4F4F5 !important; }
+        [data-theme="light"] .owner-grid div[style*="background:var(--bg-app)"]{ background: #0A0A0B !important; border-color: #27272A !important; }
+        [data-theme="light"] .owner-grid div[style*="color:var(--text-muted)"]{ color: #A1A1AA !important; }
+        [data-theme="light"] .owner-grid a[style*="var(--accent)"]{ color: #C8FF00 !important; }
+        [data-theme="light"] .owner-grid a[style*="var(--text-main)"]{ background: #F4F4F5 !important; color: #0A0A0B !important; }
+        [data-theme="light"] .owner-grid a[style*="var(--bg-app)"]{ background: #0A0A0B !important; color: #F4F4F5 !important; border-color: #27272A !important; }
+        /* Contact pills */
+        [data-theme="light"] div[style*="CONTACT FOR BUILDS"]{ background: transparent !important; }
+        [data-theme="light"] .social-btn{ background: #0A0A0B !important; border-color: #27272A !important; }
+        [data-theme="light"] .social-btn svg{ fill: #F4F4F5 !important; }
+
       </style>
 
       <div class="kova-story-root">
@@ -79,11 +104,12 @@ export const Story = {
             </div>
 
             <div class="owner-grid" style="background:var(--bg-card);border:1px solid var(--border);border-radius:24px;overflow:hidden;display:grid;grid-template-columns:320px 1fr;gap:0">
-              <div style="background:#0a0a0b;position:relative;min-height:540px;display:flex;flex-direction:column">
+              <div style="background:#0a0a0b;position:relative;min-height:540px;display:flex;    flex-direction:column">
                 <img src="/assets/dt-boss.png" onerror="this.src='/public/assets/dt-boss.png'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" alt="Emma Prince Don Fichtner">
                 <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.2) 60%,transparent 100%)"></div>
                 <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;z-index:2">
-                  <img src="/assets/ep-logo.png" onerror="this.src='/public/assets/ep-logo.png'" style="height:38px;object-fit:contain;margin-bottom:12px;filter:brightness(0) invert(1)" alt="EPDF Logo - Your Personal Logo">
+                  <img src="./assets/ep-logo.png" onerror="this.src='/public/assets/ep-logo.png'" style="height:38px;object-fit:contain;margin-bottom:12px;display:block;background:transparent" alt="EPDF Logo - Your Personal Logo">
+
                   <div style="color:white;font-weight:900;font-size:20px;letter-spacing:-.5px;line-height:1.1">EMMA PRINCE<br>DON FICHTNER</div>
                   <div style="color:var(--accent);font-size:11px;font-weight:800;letter-spacing:1px;margin-top:4px">WEB DEV • ARTIST • MUSIC PRODUCER</div>
                 </div>
@@ -129,14 +155,16 @@ export const Story = {
                     <a href="https://github.com/dopetone701" target="_blank" class="social-btn" title="GitHub dopetone701">
                       <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     </a>
-                    <a href="https://dopetonevault.com" target="_blank" style="height:40px;padding:0 16px;border-radius:12px;background:var(--accent);color:#000;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:900;text-decoration:none">VAULT →</a>
-                    <img src="/assets/dt-logo.png" onerror="this.src='/public/assets/dt-logo.png'" style="height:40px;width:40px;object-fit:contain;border-radius:10px;background:var(--bg-app);border:1px solid var(--border);padding:3px" alt="DOPETONEVAULT Logo">
+                    <a href="https://dopetonevault.com" target="_blank" style="height:40px;padding:0 18px;border-radius:12px;background:#C8FF00;color:#000;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:900;text-decoration:none;border:1px solid #C8FF00;letter-spacing:0.5px">VAULT <span style="font-size:14px">→</span></a>
+
+<img src="./assets/dt-logo.png" onerror="this.src='assets/dt-logo.png'; this.onerror=()=>{this.src='/public/assets/dt-logo.png'}" style="height:40px;width:40px;object-fit:contain;border-radius:10px;background:#0A0A0B !important;border:1px solid #27272A !important;padding:4px;mix-blend-mode:screen;" alt="DOPETONEVAULT Logo">
+
                   </div>
                 </div>
 
                 <div style="margin-top:auto;padding-top:16px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
                   <div style="font-size:11px;color:var(--text-muted)">Built in Dubai • Cloudflare Edge • D1 Synced • kova-os.pages.dev</div>
-                  <div style="display:flex;align-items:center;gap:8px"><img src="/assets/ep-logo.png" style="height:18px;opacity:.6"><span style="font-size:10px;font-weight:800;letter-spacing:1px;color:var(--text-muted)">EPDF • DOPETONE 701</span></div>
+                  <div style="display:flex;align-items:center;gap:8px"><img src="./assets/ep-logo.png" style="height:18px;opacity:.6"><span style="font-size:10px;font-weight:800;letter-spacing:1px;color:var(--text-muted)">EPDF • DOPETONE 701</span></div>
                 </div>
               </div>
             </div>

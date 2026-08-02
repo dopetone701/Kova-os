@@ -111,6 +111,85 @@ export const Home = {
           .flame-row::-webkit-scrollbar{display:none}
           .flame-card{min-width:200px !important;max-width:200px !important;flex-shrink:0 !important;scroll-snap-align:start}
         }
+
+        /* FINAL LOCK - LIGHT ONLY CHANGES PAGE BG */
+[data-theme="light"] {
+  --bg-app: #ece8df !important;
+  --bg-sidebar: #121214 !important;
+  --bg-card: #1C1C1F !important;
+  --bg-hover: #27272A !important;
+  --text-main: #F4F4F5 !important;
+  --text-muted: #A1A1AA !important;
+  --border: #27272A !important;
+}
+
+/* Only these go light */
+[data-theme="light"] body,
+[data-theme="light"] #app,
+[data-theme="light"] .app-shell,
+[data-theme="light"] .main-wrap,
+[data-theme="light"] .app-view,
+[data-theme="light"] #app-view,
+[data-theme="light"] .kova-home-root {
+  background: #ece8df !important;
+}
+
+/* EVERYTHING ELSE FORCE DARK */
+[data-theme="light"] .sidebar,
+[data-theme="light"] #sidebar,
+[data-theme="light"] .topbar,
+[data-theme="light"] #topbar,
+[data-theme="light"] .search-box,
+[data-theme="light"] #topbar .search-box,
+[data-theme="light"] .theme-card,
+[data-theme="light"] .flame-card,
+[data-theme="light"] .theme-strip,
+[data-theme="light"] .kova-inner .grid-2,
+[data-theme="light"] .kova-inner div[style*="background:var(--bg-app)"],
+[data-theme="light"] .kova-inner div[style*="background: var(--bg-app)"],
+[data-theme="light"] #topbar .btn-icon,
+[data-theme="light"] #topbar .guest-pill,
+[data-theme="light"] .guest-welcome {
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+  color: #F4F4F5 !important;
+}
+
+/* Titles that sit directly on light bg - make them dark readable */
+[data-theme="light"] .kova-home-root > .kova-inner > div > h2.theme-text,
+[data-theme="light"] .flame-header h3.theme-text,
+[data-theme="light"] .kova-inner h2.theme-text:not(.theme-card h2) {
+  color: #121214 !important;
+}
+[data-theme="light"] .kova-inner > div > p.theme-muted,
+[data-theme="light"] .flame-header + .flame-row ~ * .theme-muted {
+  color: #121214 !important;
+}
+
+/* Fix washed text in screenshots */
+[data-theme="light"] .theme-muted { color: #A1A1AA !important; }
+[data-theme="light"] .theme-text { color: #F4F4F5 !important; }
+[data-theme="light"] div[style*="background:var(--bg-app)"] .theme-text { color: #F4F4F5 !important; }
+[data-theme="light"] div[style*="background:var(--bg-app)"] .theme-muted { color: #A1A1AA !important; }
+
+/* Search input stays dark */
+[data-theme="light"] .search-box input,
+[data-theme="light"] #topbar .search-box input {
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .search-box input::placeholder {
+  color: #A1A1AA !important;
+}
+
+
+/* ALT - DARK WARM FADE TO PAPER - LOCKED */
+[data-theme="light"] .hero-fix > div[style*="linear-gradient"] {
+  background: linear-gradient(0deg, #1a1917 0%, #1a1917 8%, rgba(10,10,11,0.9) 35%, rgba(10,10,11,0.2) 80%) !important;
+}
+[data-theme="light"] .hero-fix {
+  background-color: #0A0A0B !important;
+}
+
       </style>
 
       <div class="kova-home-root">

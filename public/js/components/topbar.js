@@ -154,6 +154,80 @@ export const Topbar = {
           #topbar .btn-primary{display:none}
           #topbar .guest-pill span{max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         }
+
+        /* LIGHT LOCK - ONLY COLORS, NO LAYOUT CHANGE */
+[data-theme="light"] #topbar{
+  background: rgba(10,10,11,0.88) !important;
+  border-bottom-color: #27272A !important;
+}
+[data-theme="light"] #topbar .search-box{
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+}
+[data-theme="light"] #topbar .search-box input{
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] #topbar .search-box input::placeholder{
+  color: #A1A1AA !important;
+}
+[data-theme="light"] #topbar .btn-icon{
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+  color: #A1A1AA !important;
+}
+[data-theme="light"] #topbar .btn-icon:hover{
+  background: #27272A !important;
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] #topbar .guest-pill{
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] #topbar .k-avatar{
+  background: #F4F4F5 !important;
+  color: #0A0A0B !important;
+  border-color: #27272A !important;
+}
+[data-theme="light"] #topbar .badge-count{
+  border-color: #0A0A0B !important;
+}
+[data-theme="light"] #kova-profile-dropdown{
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+}
+
+
+/* TOP BAR DROPDOWN - LIGHT FIX ONLY */
+[data-theme="light"] div[style*="position:absolute"][style*="top:60px"],
+[data-theme="light"] #userMenu,
+[data-theme="light"] .user-dropdown{
+  background: #1C1C1F !important;
+  border: 1px solid #27272A !important;
+}
+
+/* Header inside dropdown - your first screenshot is white */
+[data-theme="light"] div[style*="position:absolute"] > div:first-child{
+  background: #0A0A0B !important;
+  border-color: #27272A !important;
+}
+[data-theme="light"] div[style*="position:absolute"] > div:first-child div{
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] div[style*="position:absolute"] > div:first-child div[style*="color:var(--text-muted)"],
+[data-theme="light"] div[style*="position:absolute"] > div:first-child span{
+  color: #A1A1AA !important;
+}
+
+/* Menu items */
+[data-theme="light"] div[style*="position:absolute"] button,
+[data-theme="light"] div[style*="position:absolute"] a{
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] div[style*="position:absolute"] button:hover{
+  background: #27272A !important;
+}
+
       </style>
 
       <button class="btn-icon" onclick="window.toggleSidebar && window.toggleSidebar()" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
@@ -162,7 +236,7 @@ export const Topbar = {
 
       <div class="search-box">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Search dishes, staff, orders..." id="globalSearch" autocomplete="off" inputmode="search" />
+        <input type="text" placeholder="Search dishes..." id="globalSearch" autocomplete="off" inputmode="search" />
         <button id="clearSearch" style="display:none; background:none; border:none; cursor:pointer; color:var(--text-muted);">✕</button>
       </div>
 

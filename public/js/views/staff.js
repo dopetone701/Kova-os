@@ -7,11 +7,32 @@ export const Staff = {
     return `
       <style>
         .staff-root{max-width:1100px;margin:0 auto;padding:24px 24px 100px 24px;box-sizing:border-box}
-        .staff-lock{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center}
-        .staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:20px}
-        .staff-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px;transition:.2s}
-        .staff-card:hover{border-color:var(--accent-2)}
-        @media(max-width:768px){.staff-root{padding:16px 16px 90px 16px}.staff-grid{grid-template-columns:1fr}}
+.staff-lock{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center}
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:20px}
+.staff-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px;transition:.2s}
+.staff-card:hover{border-color:var(--accent-2)}
+@media(max-width:768px){.staff-root{padding:16px 16px 90px 16px}.staff-grid{grid-template-columns:1fr}}
+
+/* ===== LIGHT LOCK - SOFT APPLE DARKER ===== */
+[data-theme="light"] .staff-root{ background: #E6DFD3 !important; min-height:100vh; }
+[data-theme="light"] .staff-root h2{ color: #121214 !important; }
+[data-theme="light"] .staff-root h2 span{ color: #8B8680 !important; }
+[data-theme="light"] .staff-root > div > p{ color: #6B6560 !important; }
+[data-theme="light"] .staff-lock{ background: #1C1C1F !important; border-color: #27272A !important; color: #F4F4F5 !important; }
+[data-theme="light"] .staff-lock div{ color: #F4F4F5 !important; }
+[data-theme="light"] .staff-lock div[style*="color:var(--text-muted)"]{ color: #A1A1AA !important; }
+[data-theme="light"] .staff-card{ background: #1C1C1F !important; border-color: #27272A !important; }
+[data-theme="light"] .staff-card div{ color: #F4F4F5 !important; }
+[data-theme="light"] .staff-card div[style*="color:var(--text-muted)"]{ color: #A1A1AA !important; }
+
+/* Admin access notice - ORANGE in light mode */
+[data-theme="light"] #staffContent > div[style*="rgba(200,255,0"]{
+  background: rgba(255,78,31,0.12) !important;
+  border-color: rgba(255,78,31,0.35) !important;
+  color: #FF4E1F !important;
+  font-weight: 700 !important;
+}
+
       </style>
       <div class="staff-root">
         <div id="staffHeader">

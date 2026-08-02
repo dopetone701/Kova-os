@@ -1,4 +1,4 @@
-// KOVA Router - HASH ONLY - FINAL - Orders in views, Settings + Recommendation in components
+// KOVA Router - HASH ONLY - FINAL - Orders in views, Settings + Recommendation in components - + SUNO SKELETON
 import { Home } from '../views/home.js';
 import { Menu } from '../views/menu.js';
 import { Staff } from '../views/staff.js';
@@ -8,6 +8,8 @@ import { Auth } from '../views/auth.js';
 import { Orders } from '../views/orders.js';
 import { Settings } from '../components/settings.js';
 
+// SKELETON IMPORT - NEW
+import { Skeletons } from '../skeletons/index.js';
 
 const routes = {
   '/': Home, '/home': Home, 'home': Home, 'index.html': Home,
@@ -36,15 +38,27 @@ export const Router = {
     });
     this.resolve();
   },
+
+  getSkeleton(path){
+    try {
+      return Skeletons.get('#/' + path) || '';
+    } catch { return ''; }
+  },
+
   resolve() {
     let hashPath = window.location.hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
     let path = hashPath || 'home';
     if (path === '' || path === 'index.html' || path === 'public') path = 'home';
     console.log('ROUTING TO:', path);
+
     const View = routes['/' + path] || routes[path] || routes['/home'];
     const app = document.getElementById('app') || document.getElementById('app-view');
     if (!app) return;
-    app.innerHTML = `<div style="padding:40px;color:#888">Loading ${path}...</div>`;
+
+    // SUNO - EXACT SKELETON NOT LOADING TEXT
+    const skHtml = this.getSkeleton(path);
+    app.innerHTML = skHtml || `<div class="kv-shell"><div class="kv-sk kv-line" style="width:180px;height:26px"></div></div>`;
+
     setTimeout(async () => {
       try {
         const html = await View.render();
@@ -57,7 +71,7 @@ export const Router = {
         console.error('Render error:', err);
         app.innerHTML = `<div style="padding:20px;color:red">Error ${path}: ${err.message}</div>`;
       }
-    }, 30);
+    }, 80); // tiny delay for skeleton to paint like Suno
   }
 };
 
