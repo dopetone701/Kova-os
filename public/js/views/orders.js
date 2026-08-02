@@ -1,5 +1,7 @@
 // KOVA Guest Orders - PREMIUM - MOBILE LOCKED CENTER - NO SIDE DRAG - ORIGINAL + FIX ONLY
 import { Recommendations } from '../components/recommendation.js';
+import { ordersSkeleton } from '../skeletons/orders.skeleton.js';
+
 
 export const Orders = {
   WORKER_URL: 'https://kova-guest-sign-up.dopetone701.workers.dev',
@@ -41,6 +43,119 @@ export const Orders = {
           #recBox{overflow-x:clip}
           #recBox > div{overflow-x:auto !important;overscroll-behavior-x:contain !important;touch-action:pan-y pan-x !important}
         }
+
+
+        /* LIGHT LOCK - ONLY PAGE BG LIGHT */
+[data-theme="light"] .orders-root{
+  background: #ece8df !important;
+}
+[data-theme="light"] .orders-inner{
+  background: transparent !important;
+}
+[data-theme="light"] .order-card{
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .order-card .t-dot{
+  background: #0A0A0B !important;
+  border-color: #27272A !important;
+  color: #A1A1AA !important;
+}
+[data-theme="light"] .order-item{
+  background: #0A0A0B !important;
+  border-color: #27272A !important;
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .arivie-msg{
+  background: linear-gradient(135deg,rgba(200,255,0,.14),rgba(255,78,31,.14)) !important;
+  border-color: rgba(200,255,0,.25) !important;
+}
+[data-theme="light"] .prev-toggle{
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+  color: #A1A1AA !important;
+}
+[data-theme="light"] .orders-inner h1{
+  color: #121214 !important;
+}
+[data-theme="light"] #ordersList{
+  color: #121214 !important;
+}
+
+
+/* FIX RATE BAR + CHEF PICK + COLD DRINKS WASHED */
+[data-theme="light"] .kova-mobile-filler > div {
+  background: #1C1C1F !important;
+  border-color: #27272A !important;
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .kova-mobile-filler div[style*="color:var(--text-muted)"] {
+  color: #A1A1AA !important;
+}
+[data-theme="light"] .kova-mobile-filler div[style*="color:var(--text-main)"] {
+  color: #F4F4F5 !important;
+}
+/* Rate banner */
+[data-theme="light"] .arivie-msg {
+  background: linear-gradient(135deg,rgba(200,255,0,.14),rgba(255,78,31,.14)) !important;
+  border-color: rgba(200,255,0,.25) !important;
+}
+[data-theme="light"] .arivie-msg div {
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .arivie-msg div div[style*="color:var(--text-muted)"] {
+  color: #A1A1AA !important;
+}
+
+/* Chef Pick + Cold Drinks buttons */
+[data-theme="light"] .kova-mobile-filler button {
+  border-color: #27272A !important;
+}
+[data-theme="light"] .kova-mobile-filler button[style*="var(--text-main)"] {
+  background: #F4F4F5 !important;
+  color: #0A0A0B !important;
+}
+[data-theme="light"] .kova-mobile-filler button[style*="var(--bg-app)"] {
+  background: #0A0A0B !important;
+  color: #F4F4F5 !important;
+  border-color: #27272A !important;
+}
+
+/* Show previous + orders count on light bg */
+[data-theme="light"] .orders-inner h1 {
+  color: #121214 !important;
+}
+[data-theme="light"] .orders-inner > div > p {
+  color: #8B8680 !important;
+}
+
+[data-theme="light"] #arivieBox .arivie-msg,
+[data-theme="light"] .arivie-msg{
+  background: linear-gradient(90deg, #E6FF4A 0%, #D4FF00 35%, #FFD93D 65%, #FF8A2E 100%) !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  color: #000 !important;
+}
+[data-theme="light"] #arivieBox .arivie-msg div,
+[data-theme="light"] .arivie-msg div{
+  color: #000 !important;
+}
+[data-theme="light"] #arivieBox .arivie-msg div div:last-child{
+  color: rgba(0,0,0,0.65) !important;
+}
+
+
+/* DARK ONLY - Order Again fix */
+[data-theme="dark"] .order-card button[onclick*="orderAgain"],
+html:not([data-theme="light"]) .order-card button[onclick*="orderAgain"]{
+  background: #F4F4F5 !important;
+  color: #0A0A0B !important;
+  border-color: #F4F4F5 !important;
+  font-weight: 900 !important;
+  opacity: 1 !important;
+}
+
+
       </style>
       <div class="orders-root">
         <div class="orders-inner">
@@ -60,7 +175,8 @@ export const Orders = {
             <div class="prev-toggle" id="toggleHistory">↓ Show previous (<span id="prevCount">0</span>)</div>
             <div id="ordersHistory" style="display:none"></div>
           </div>
-          <div id="ordersList" style="min-height:200px;display:grid;place-items:center;color:var(--text-muted)">Loading from D1...</div>
+<div id="ordersSkeletonWrap">${ordersSkeleton}</div>
+<div id="ordersList" style="display:none;min-height:200px"></div>
         </div>
       </div>
     `;
@@ -68,6 +184,8 @@ export const Orders = {
 
   async afterRender(){
     const token=localStorage.getItem('kova_token');
+    const skelEl=document.getElementById('ordersSkeletonWrap');
+
     const listEl=document.getElementById('ordersList');
     const lastBox=document.getElementById('lastOrderBox');
     const arivieBox=document.getElementById('arivieBox');
@@ -79,12 +197,18 @@ export const Orders = {
 
     if(!token){
       listEl.innerHTML=`<div style="text-align:center;padding:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px">🔒 Sign in to see orders<br><button onclick="location.hash='#/auth'" style="margin-top:14px;background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:900">Sign In</button></div>`;
+      // inside if(!token){
+if(skelEl) skelEl.style.display='none';
+
       try{
         recBox.innerHTML=await Recommendations.render({title:'Trending Now',count:6,showDiscount:true});
         Recommendations.attachEvents && Recommendations.attachEvents();
       }catch(e){ recBox.innerHTML=''; }
       this.renderMobileFiller(mobileFiller);
       return;
+      // inside if(!token){
+if(skelEl) skelEl.style.display='none';
+
     }
 
     try{
@@ -94,12 +218,18 @@ export const Orders = {
       document.getElementById('ordersCount').textContent=`· ${orders.length}`;
       if(orders.length===0){
         listEl.style.display='none';
+        // inside if(!token){
+if(skelEl) skelEl.style.display='none';
+
         recBox.innerHTML=await Recommendations.render({title:'Start with these',count:8,showDiscount:true});
         Recommendations.attachEvents && Recommendations.attachEvents();
         this.renderMobileFiller(mobileFiller);
         return;
       }
       listEl.style.display='none';
+      // inside if(!token){
+if(skelEl) skelEl.style.display='none';
+
       const latest=orders[0]; const rest=orders.slice(1);
 
       const st=(latest.status||'pending').toLowerCase();

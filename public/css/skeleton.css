@@ -1,0 +1,67 @@
+/* KOVA - Suno Style Exact Skeletons - FIXED */
+.kv-sk{
+  animation:kvPulse 1.4s ease-in-out infinite;
+  will-change:opacity;
+}
+@keyframes kvPulse{
+  0%,100%{opacity:.85}
+  50%{opacity:.45}
+}
+.kv-sk-bg{
+  background:#1C1C1F;
+  border:1px solid #27272A;
+}
+.kv-sk-line{
+  height:12px;
+  border-radius:999px;
+  background:#27272A;
+}
+.kv-sk-card{
+  border-radius:20px;
+  background:#1C1C1F;
+  border:1px solid #27272A;
+}
+
+/* Layouts */
+.kv-shell{
+  padding:28px 40px;
+  max-width:1100px;
+  margin:0 auto;
+  box-sizing:border-box;
+}
+.kv-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+.kv-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;
+}
+.kv-flex{
+  display:flex;
+  gap:12px;
+  overflow:hidden;
+}
+.lime-grad{
+  background:linear-gradient(90deg,#E6FF4A 0%,#D4FF00 35%,#FFD93D 65%,#FF8A2E 100%)!important;
+}
+.w-160{width:160px}.h-26{height:26px}.w-104{width:104px}.h-36{height:36px}
+.w-90{width:90px}.w-110{width:110px}.h-11{height:11px}
+.mt-8{margin-top:8px}.o-7{opacity:.7}
+.round{border-radius:999px}
+
+@media(max-width:768px){
+  .kv-shell{padding:16px 12px 100px}
+  .kv-grid{grid-template-columns:1fr 1fr;gap:10px}
+}
+
+
+@media(max-width:768px){
+  .kv-shell{padding:12px 10px 100px!important}
+  .kv-flex{flex-wrap:wrap}
+  [style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr!important}
+  [style*="repeat(auto-fill,minmax(280px"]{grid-template-columns:1fr 1fr!important;gap:10px!important}
+}

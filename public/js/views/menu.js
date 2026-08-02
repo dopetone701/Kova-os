@@ -61,28 +61,60 @@ export const Menu = {
     return `
       <style>
       #app{padding-top:0 !important}
-      .menu-wrap{max-width:1300px;margin:0 auto;padding:0 24px 80px 24px;box-sizing:border-box;overflow:visible}
-      .menu-head{padding:20px 0 12px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-      .filter-bar{position:sticky;top:0;z-index:40;background:rgba(10,10,11,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border);margin:0 -24px;padding:12px 24px;display:flex;gap:8px;align-items:center;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;will-change:transform}
-      .filter-bar::-webkit-scrollbar{display:none}
-      .filter-chip{flex-shrink:0;white-space:nowrap;padding:8px 14px;border-radius:999px;border:1px solid var(--border);font-weight:700;font-size:11px;cursor:pointer;transition:.18s ease;background:var(--bg-card);color:var(--text-muted)}
-      .filter-chip.active{background:var(--text-main);color:var(--bg-app);border-color:var(--text-main)}
-      .filter-chip.idle{background:var(--bg-card);color:var(--text-muted)}
-      .filter-chip:hover{border-color:var(--text-muted);transform:translateY(-1px)}
-      .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:18px;width:100%;box-sizing:border-box}
-      .k-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:.2s;position:relative;min-width:0;max-width:100%;box-sizing:border-box}
-      .k-card:hover{border-color:#3a3a3e;transform:translateY(-2px)}
-      .cart-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text-main);color:var(--bg-app);padding:12px 20px;border-radius:999px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,0.4);z-index:60;max-width:90vw}
-      @media(max-width:768px){
-        html, body { overflow-x:hidden!important; max-width:100vw!important; }
-        #app{padding-left:0 !important;padding-right:0 !important}
-        .menu-wrap{padding:0 12px 80px 12px!important;margin:0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:visible!important}
-        .menu-head{padding:16px 12px 10px 12px !important}
-        .filter-bar{margin:0 -12px!important;padding:12px 12px!important;width:calc(100% + 24px)!important;max-width:100vw!important;box-sizing:border-box!important;top:0!important;background:rgba(10,10,11,0.94)!important}
-        .menu-grid{grid-template-columns:1fr!important;gap:12px!important;width:100%!important}
-        @media(min-width:430px) and (max-width:768px){ .menu-grid{grid-template-columns:repeat(2,1fr)!important} }
-        .k-card{width:100%!important;max-width:100%!important;min-width:0!important}
-      }
+.menu-wrap{max-width:1300px;margin:0 auto;padding:0 24px 80px 24px;box-sizing:border-box;overflow:visible;background:var(--bg-app)}
+.menu-head{padding:20px 0 12px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.filter-bar{position:sticky;top:0;z-index:40;background:rgba(10,10,11,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border);margin:0 -24px;padding:12px 24px;display:flex;gap:8px;align-items:center;overflow-x:auto;overflow-y:hidden;white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;will-change:transform}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;white-space:nowrap;padding:8px 14px;border-radius:999px;border:1px solid var(--border);font-weight:700;font-size:11px;cursor:pointer;transition:.18s ease;background:var(--bg-card);color:var(--text-muted)}
+.filter-chip.active{background:var(--text-main);color:var(--bg-app);border-color:var(--text-main)}
+.filter-chip.idle{background:var(--bg-card);color:var(--text-muted)}
+.filter-chip:hover{border-color:var(--text-muted);transform:translateY(-1px)}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:18px;width:100%;box-sizing:border-box}
+.k-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:.2s;position:relative;min-width:0;max-width:100%;box-sizing:border-box}
+.k-card:hover{border-color:#3a3a3e;transform:translateY(-2px)}
+.cart-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text-main);color:var(--bg-app);padding:12px 20px;border-radius:999px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,0.4);z-index:60;max-width:90vw}
+@media(max-width:768px){
+  html, body { overflow-x:hidden!important; max-width:100vw!important; }
+  #app{padding-left:0 !important;padding-right:0 !important}
+  .menu-wrap{padding:0 12px 80px 12px!important;margin:0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:visible!important}
+  .menu-head{padding:16px 12px 10px 12px !important}
+  .filter-bar{margin:0 -12px!important;padding:12px 12px!important;width:calc(100% + 24px)!important;max-width:100vw!important;box-sizing:border-box!important;top:0!important;background:rgba(10,10,11,0.94)!important}
+  .menu-grid{grid-template-columns:1fr!important;gap:12px!important;width:100%!important}
+  @media(min-width:430px) and (max-width:768px){ .menu-grid{grid-template-columns:repeat(2,1fr)!important} }
+  .k-card{width:100%!important;max-width:100%!important;min-width:0!important}
+}
+/* === LIGHT LOCK - ONLY BG LIGHT === */
+[data-theme="light"] .menu-wrap{background:#ece8df !important}
+[data-theme="light"] #app{background:#ece8df !important}
+[data-theme="light"] .filter-bar{background:rgba(10,10,11,0.88) !important;border-bottom-color:#27272A !important}
+[data-theme="light"] .filter-chip{background:#1C1C1F !important;border-color:#27272A !important;color:#A1A1AA !important}
+[data-theme="light"] .filter-chip.active{background:#F4F4F5 !important;color:#0A0A0B !important;border-color:#F4F4F5 !important}
+[data-theme="light"] .k-card{background:#1C1C1F !important;border-color:#27272A !important}
+[data-theme="light"] .menu-head h2{color:#121214 !important}
+[data-theme="light"] .menu-head p{color:#8B8680 !important}
+
+/* FIX FLOATING CART WASHED */
+[data-theme="light"] .cart-bar,
+[data-theme="light"] #cartBar {
+  background: #121214 !important;
+  border: 1px solid #27272A !important;
+  color: #F4F4F5 !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+}
+[data-theme="light"] .cart-bar span,
+[data-theme="light"] #cartBar span {
+  color: #F4F4F5 !important;
+}
+[data-theme="light"] .cart-bar button,
+[data-theme="light"] #cartBar button {
+  color: #000 !important;
+}
+[data-theme="light"] .cart-bar button:last-child,
+[data-theme="light"] #cartBar button:last-child {
+  background: #F4F4F5 !important;
+  color: #0A0A0B !important;
+}
+
       </style>
 
       <div class="menu-wrap" id="menuWrap">
@@ -93,7 +125,7 @@ export const Menu = {
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <button id="viewCartBtn" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-main);padding:8px 14px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer">🛒 ${cartCount} • AED ${cartTotal.toFixed(0)}</button>
-            <button id="checkoutBtn" style="background:var(--accent);color:#000;border:0;padding:8px 16px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;display:${cartCount?'inline-block':'none'}">Checkout → Orders (D1)</button>
+            <button id="checkoutBtn" style="background:var(--accent);color:#000;border:0;padding:8px 16px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;display:${cartCount?'inline-block':'none'}">Checkout → Orders </button>
           </div>
         </div>
 
@@ -107,11 +139,12 @@ export const Menu = {
         <div id="menuGrid" class="menu-grid"></div>
         <div id="sentinel" style="height:40px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:11px;margin-top:10px">Loading ember...</div>
 
-        <div id="cartBar" class="cart-bar" style="display:${cartCount?'flex':'none'}">
-          <span style="font-weight:800;font-size:13px">🛒 ${cartCount} • AED ${cartTotal.toFixed(0)} • ${token?'D1 Saved':'Local'}</span>
-          <button onclick="document.getElementById('checkoutBtn')?.click()" style="background:#C8FF00;color:#000;border:0;padding:8px 16px;border-radius:999px;font-weight:800;font-size:12px;cursor:pointer">Checkout</button>
-          <button onclick="location.hash='#/orders'" style="background:#fff;color:#000;border:0;padding:8px 16px;border-radius:999px;font-weight:800;font-size:12px;cursor:pointer">My Orders</button>
-        </div>
+        <div id="cartBar" style="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99999;display:${cartCount?'flex':'none'};gap:8px;align-items:center;background:#F4F4F5;border-radius:999px;padding:6px 8px 6px 12px;box-shadow:0 12px 32px rgba(0,0,0,.35);border:1px solid #E5E5E5;white-space:nowrap;height:42px">
+  <span style="font-weight:800;font-size:11px;color:#000;white-space:nowrap">🛒 ${cartCount} • AED ${cartTotal.toFixed(0)} • D1 Saved</span>
+  <button onclick="location.hash='#/checkout'" style="background:#E6E82A;color:#000;border:0;padding:8px 14px;border-radius:999px;font-weight:900;font-size:11px;cursor:pointer;white-space:nowrap">Checkout</button>
+  <button onclick="location.hash='#/orders'" style="background:transparent;color:#000;border:0;padding:8px 10px;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap">My Orders</button>
+</div>
+
       </div>
     `;
   },
@@ -139,7 +172,7 @@ export const Menu = {
         try{ await fetch(`${GUEST_WORKER}/api/guest/wishlist/toggle`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({item_id: String(item.id), title: item.title, price: String(item.price), image: item.image||''})}); }catch{}
       },
       async createOrder(){
-        if(!token){ alert('Sign in to create order that never gets lost — D1 saves it forever'); location.hash='#/auth'; return null; }
+        if(!token){ alert('Sign in to create order'); location.hash='#/auth'; return null; }
         try{
           const r = await fetch(`${GUEST_WORKER}/api/guest/orders/create`, {method:'POST', headers:{'Authorization':`Bearer ${token}`}});
           const d = await r.json();
@@ -222,7 +255,7 @@ export const Menu = {
               <div style="font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.title}</div>
               <div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${d.ar}</div>
               <div style="font-size:12px;color:var(--text-muted);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px;line-height:1.4">${d.desc}</div>
-              <button class="add-cart" data-id="${d.id}" style="margin-top:10px;width:100%;background:${inCart?'#F4F4F5':'#C8FF00'};color:#0A0A0B;border:none;padding:10px;border-radius:999px;font-weight:800;font-size:11px;cursor:pointer">${inCart?`✓ x${inCart.qty} ${token?'• D1':''}`:'+ Add to Cart • D1 Safe'}</button>
+              <button class="add-cart" data-id="${d.id}" style="margin-top:10px;width:100%;background:${inCart?'#F4F4F5':'#C8FF00'};color:#0A0A0B;border:none;padding:10px;border-radius:999px;font-weight:800;font-size:11px;cursor:pointer">${inCart?`added `:'+ Add to Cart '}</button>
             </div>
           </div>
         `);
@@ -261,7 +294,7 @@ export const Menu = {
           else this.cart.push({...item, qty:1});
           updateTopbarCart();
           const qty = this.cart.find(c=>String(c.id)===String(id)).qty;
-          b.textContent = `✓ x${qty} ${token?'• D1':''}`;
+          b.textContent = `added`;
           b.style.background = '#F4F4F5';
           await d1.cartAdd({...item, qty:1});
         };
