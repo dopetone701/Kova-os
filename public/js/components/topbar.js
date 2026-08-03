@@ -96,29 +96,32 @@ export const Topbar = {
           color:#fff;
         }
         #topbar .k-avatar{
-          width:36px;height:36px;border-radius:50%;
-          background: var(--text-main);
-          color: var(--bg-app);
-          display:flex;align-items:center;justify-content:center;
-          font-weight:900; flex-shrink:0;
-          position:relative;
-          border:2px solid var(--border);
-          overflow:hidden;
-        }
-        #topbar .k-avatar img{width:100%;height:100%;object-fit:cover}
-        [data-theme="light"] #topbar .k-avatar{
-          background:#121214; color:#fff;
-        }
-        #topbar .k-avatar:after{
-          content:'';
-          position:absolute;
-          bottom:-2px; right:-2px;
-          width:10px; height:10px;
-          background: var(--accent-2);
-          border:2px solid var(--bg-app);
-          border-radius:50%;
-          box-shadow:0 0 6px var(--accent-2);
-        }
+  width:36px;height:36px;border-radius:50%;
+  background: var(--text-main);
+  color: var(--bg-app);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900; flex-shrink:0;
+  position:relative;
+  border:2px solid var(--border);
+  overflow: visible; /* FIX 1: was hidden, that's why dot was cut */
+}
+#topbar .k-avatar img{width:100%;height:100%;object-fit:cover; border-radius:50%;}
+[data-theme="light"] #topbar .k-avatar{
+  background:#121214; color:#fff;
+}
+#topbar .k-avatar:after{
+  content:'';
+  position:absolute;
+  bottom:0; right:0;
+  width:10px; height:10px;
+  background: var(--accent-2);
+  border:2px solid var(--bg-app);
+  border-radius:50%;
+  box-shadow:0 0 6px var(--accent-2);
+  transform: translate(30%, 30%); /* FIX 2: push it OUTSIDE circle */
+  z-index: 2;
+}
+
         #topbar .badge-count{
           position:absolute;
           top:-4px; right:-4px;

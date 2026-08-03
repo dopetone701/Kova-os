@@ -32,6 +32,28 @@ export const Auth = {
         @media(max-width:900px){.acct-wrap{grid-template-columns:1fr}.auth-root{margin:0!important;margin-left:-16px!important;margin-right:-16px!important;width:calc(100% + 32px)!important;min-width:calc(100% + 32px)!important;padding:16px}}
         /* no zoom fix */
         input, textarea, select { font-size:16px!important; }
+
+        /* LIGHT MODE FIX - card stays dark, so buttons must stay light text */
+[data-theme="light"] .auth-tabs{
+  background: rgba(0,0,0,0.25) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+[data-theme="light"] .auth-tab{
+  color: rgba(255,255,255,0.7) !important; /* Sign Up now visible */
+}
+[data-theme="light"] .auth-tab.active{
+  background: #FFFFFF !important;
+  color: #111113 !important; /* Sign In black on white */
+}
+[data-theme="light"] .btn-ghost{
+  background: rgba(255,255,255,0.14) !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  color: #FFFFFF !important; /* Back to Home now visible */
+}
+
+
+
+        
       </style>
 
       <div class="auth-root">
@@ -105,6 +127,13 @@ export const Auth = {
          .auth-card{padding:20px;border-radius:16px}
         }
         input, textarea { font-size:16px!important; }
+
+        .auth-card{width:100%;max-width:440px;background:#12131A !important;border:1px solid rgba(255,255,255,0.1) !important;border-radius:20px;padding:28px;box-sizing:border-box;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.auth-tabs{display:flex;gap:8px;margin-bottom:20px;background:#1E1F28 !important;padding:4px;border-radius:999px;border:1px solid rgba(255,255,255,0.08) !important}
+.auth-tab{flex:1;padding:10px;border-radius:999px;border:0;background:transparent !important;color:rgba(255,255,255,0.6) !important;font-weight:700;font-size:13px;cursor:pointer}
+.auth-tab.active{background:#FFFFFF !important;color:#000000 !important}
+.btn-ghost{background:#252631 !important;border:1px solid rgba(255,255,255,0.15) !important;color:#FFFFFF !important;margin-top:8px}
+
       </style>
 
       <div class="auth-root">
