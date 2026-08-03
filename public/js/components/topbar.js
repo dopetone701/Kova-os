@@ -434,45 +434,42 @@ export const Topbar = {
 };
 
 
-// === KOVA immersive scroll - iPhone bar hide + DNA color ===
+// === KOVA immersive scroll - FIXED ===
 (() => {
   const themeMeta = document.getElementById('themeColor');
-  const topbar = document.getElementById('topbar');
+  const topbar = document.querySelector('header') || document.querySelector('.topbar') || document.getElementById('topbar');
+  if(!topbar){ console.log('KOVA: topbar not found'); return; }
+  
   let lastY = 0;
-
-  const DNA_LIME = '#D8FF00';   // KOVA lemon
-  const DNA_ORANGE = '#FF4E1F'; // KOVA fire
-  const DNA_DARK = '#12131A';    // default noir
+  const LIME = '#D8FF00';
+  const DARK = '#12131A';
 
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
+    console.log('scroll', y); // debug
 
-    if(!topbar) return;
-
-    // When user starts scrolling -> hide mobile bar (iOS does it automatically when body is scrollable)
-    // + change topbar to DNA color
-    if(y > 60){
-      topbar.style.background = DNA_LIME; // or DNA_ORANGE for fire mode
+    if(y > 50){
+      topbar.style.background = LIME + ' !important';
+      topbar.style.backgroundColor = LIME;
       topbar.style.color = '#000';
-      topbar.style.backdropFilter = 'blur(12px)';
-      topbar.style.borderBottom = '1px solid rgba(0,0,0,0.1)';
-      topbar.style.transition = 'all 0.3s ease';
-      if(themeMeta) themeMeta.content = DNA_LIME;
+      if(themeMeta) themeMeta.setAttribute('content', LIME);
       
-      // hide on scroll down, show on scroll up
-      if(y > lastY && y > 150){
+      if(y > lastY && y > 120){
         topbar.style.transform = 'translateY(-100%)';
       } else {
         topbar.style.transform = 'translateY(0)';
       }
     } else {
-      // top of page = noir
-      topbar.style.background = 'rgba(18,19,26,0.9)';
+      topbar.style.backgroundColor = DARK;
+      topbar.style.background = DARK;
       topbar.style.color = '#fff';
       topbar.style.transform = 'translateY(0)';
-      topbar.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-      if(themeMeta) themeMeta.content = DNA_DARK;
+      if(themeMeta) themeMeta.setAttribute('content', DARK);
     }
+    topbar.style.transition = 'all 0.35s ease';
+    topbar.style.position = 'sticky';
+    topbar.style.top = '0';
+    topbar.style.zIndex = '9999';
     lastY = y;
   }, { passive: true });
 })();
