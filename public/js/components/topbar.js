@@ -432,3 +432,47 @@ export const Topbar = {
     observer.observe(document.getElementById('app') || document.body, { childList:true, subtree:true });
   }
 };
+
+
+// === KOVA immersive scroll - iPhone bar hide + DNA color ===
+(() => {
+  const themeMeta = document.getElementById('themeColor');
+  const topbar = document.getElementById('topbar');
+  let lastY = 0;
+
+  const DNA_LIME = '#D8FF00';   // KOVA lemon
+  const DNA_ORANGE = '#FF4E1F'; // KOVA fire
+  const DNA_DARK = '#12131A';    // default noir
+
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+
+    if(!topbar) return;
+
+    // When user starts scrolling -> hide mobile bar (iOS does it automatically when body is scrollable)
+    // + change topbar to DNA color
+    if(y > 60){
+      topbar.style.background = DNA_LIME; // or DNA_ORANGE for fire mode
+      topbar.style.color = '#000';
+      topbar.style.backdropFilter = 'blur(12px)';
+      topbar.style.borderBottom = '1px solid rgba(0,0,0,0.1)';
+      topbar.style.transition = 'all 0.3s ease';
+      if(themeMeta) themeMeta.content = DNA_LIME;
+      
+      // hide on scroll down, show on scroll up
+      if(y > lastY && y > 150){
+        topbar.style.transform = 'translateY(-100%)';
+      } else {
+        topbar.style.transform = 'translateY(0)';
+      }
+    } else {
+      // top of page = noir
+      topbar.style.background = 'rgba(18,19,26,0.9)';
+      topbar.style.color = '#fff';
+      topbar.style.transform = 'translateY(0)';
+      topbar.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+      if(themeMeta) themeMeta.content = DNA_DARK;
+    }
+    lastY = y;
+  }, { passive: true });
+})();
