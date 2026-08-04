@@ -150,15 +150,29 @@ export const Auth = {
             <div class="auth-field"><label>Password</label><div class="pass-wrap"><input type="password" id="signinPass" name="password" required placeholder="••••••••" autocomplete="current-password" /><button type="button" class="eye-btn" data-eye="signinPass">👁️</button></div></div>
             <button type="submit" class="auth-btn btn-primary" id="signinBtn">Sign In →</button>
           </form>
-          <form id="signupForm" style="display:none">
+                   <form id="signupForm" style="display:none">
             <div class="avatar-preview" id="avatarPreview" onclick="document.getElementById('photoInput').click()"><span style="font-size:24px">📸</span><img id="avatarImg" style="display:none" /></div>
             <input type="file" id="photoInput" name="photo" accept="image/*" style="display:none" />
             <div class="auth-field"><label>Full Name *</label><input type="text" name="name" required placeholder="Ahmed Al Maktoum" autocomplete="name" /></div>
             <div class="auth-field"><label>Email *</label><input type="email" name="email" required placeholder="you@example.com" inputmode="email" autocomplete="email" /></div>
-            <div class="auth-field"><label>Phone *</label><input type="tel" name="phone" required placeholder="+971 50 123 4567" inputmode="tel" autocomplete="tel" /></div>
+            <div class="auth-field"><label>Phone * — rider will call</label><input type="tel" name="phone" required placeholder="+971 50 123 4567" inputmode="tel" autocomplete="tel" /></div>
+            
+            <div style="margin:14px 0 6px;padding:12px;background:rgba(200,255,0,.08);border:1px solid rgba(200,255,0,.18);border-radius:14px">
+              <div style="font-size:11px;font-weight:900;letter-spacing:.6px;margin-bottom:10px;display:flex;justify-content:space-between">DELIVERY DETAILS <span style="font-size:10px;color:var(--text-muted);font-weight:600">Shown read-only on Orders</span></div>
+              <div class="auth-field"><label>Address</label><input type="text" id="signupAddress" name="address" placeholder="Dubai Marina, JLT..." /></div>
+              <div class="auth-field"><label>Building / Villa</label><input type="text" id="signupBuilding" name="building" placeholder="Al Barsha Tower A" /></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="auth-field"><label>Room / Flat No.</label><input type="text" id="signupRoom" name="room" placeholder="1204" /></div>
+                <div class="auth-field"><label>Landmark</label><input type="text" id="signupLandmark" name="landmark" placeholder="Near mosque / Spinneys" /></div>
+              </div>
+              <button type="button" id="signupDetectBtn" class="auth-btn btn-ghost" style="height:36px;font-size:12px">📍 Detect my location</button>
+              <div id="signupLocStatus" style="font-size:10px;color:var(--text-muted);margin-top:6px"></div>
+            </div>
+
             <div class="auth-field"><label>Password *</label><div class="pass-wrap"><input type="password" id="signupPass" name="password" required placeholder="••••••••" autocomplete="new-password" /><button type="button" class="eye-btn" data-eye="signupPass">👁️</button></div></div>
             <button type="submit" class="auth-btn btn-primary" id="signupBtn">Create Account →</button>
           </form>
+
           <button class="auth-btn btn-ghost" onclick="location.hash='#/'">← Back to Home</button>
         </div>
       </div>
@@ -288,6 +302,23 @@ export const Auth = {
       const r=new FileReader(); r.onload=()=>{ const img=document.getElementById('avatarImg'); img.src=r.result; img.style.display='block'; document.querySelector('#avatarPreview span').style.display='none'; }; r.readAsDataURL(f);
     });
 
+       let signupPin = {lat:25.2048,lng:55.2708};
+    document.getElementById('signupDetectBtn')?.addEventListener('click', ()=>{
+      const st=document.getElementById('signupLocStatus');
+      if(!navigator.geolocation){ if(st) st.textContent='GPS not supported'; return; }
+      if(st) st.textContent='Detecting...';
+      navigator.geolocation.getCurrentPosition(async(pos)=>{
+        signupPin={lat:pos.coords.latitude,lng:pos.coords.longitude};
+        try{
+          const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${signupPin.lat}&lon=${signupPin.lng}`);
+          const d=await r.json();
+          document.getElementById('signupAddress').value = d.display_name||'';
+        }catch{}
+        if(st) st.textContent=`Detected ✓ ${signupPin.lat.toFixed(4)}, ${signupPin.lng.toFixed(4)}`;
+      },(err)=>{ if(st) st.textContent='Failed: '+err.message; },{enableHighAccuracy:true});
+    });
+
+
     const syncToServer = async (token)=>{
       try{
         const localCart = JSON.parse(localStorage.getItem('kova_cart')||'[]');
@@ -307,21 +338,68 @@ export const Auth = {
         localStorage.setItem('kova_token', data.token); localStorage.setItem('kova_guest', JSON.stringify(data.guest));
         localStorage.setItem('kova_is_admin', data.guest.is_admin?'1':'0');
         await syncToServer(data.token);
-        showOk(`Welcome ${data.guest.name}!`); setTimeout(()=>{ location.hash='#/'; location.reload(); }, 700);
+       showOk(`Welcome ${data.guest.name}!`);
+        setTimeout(()=>{
+          const hashQuery = location.hash.split('?')[1] || '';
+          const params = new URLSearchParams(hashQuery);
+          const next = params.get('next');
+          const pending = localStorage.getItem('kova_pending_checkout');
+          if(pending || next){
+            location.hash = `#/${next||'orders'}`;
+            location.reload();
+          } else {
+            location.hash='#/';
+            location.reload();
+          }
+        }, 700);
       }catch(err){ showErr(err.message); } finally{ btn.disabled=false; btn.textContent='Sign In →'; }
     });
 
-    signupForm?.addEventListener('submit', async(e)=>{
+       signupForm?.addEventListener('submit', async(e)=>{
       e.preventDefault();
       const btn=document.getElementById('signupBtn'); btn.disabled=true; btn.textContent='Creating...';
       try{
         const fd=new FormData(signupForm);
+
+        // === SAVE LOCATION FROM SIGNUP FIELDS ===
+        const loc={
+          lat: (window.signupPin?.lat||25.2048),
+          lng: (window.signupPin?.lng||55.2708),
+          address: document.getElementById('signupAddress')?.value.trim()||'',
+          building: document.getElementById('signupBuilding')?.value.trim()||'',
+          room: document.getElementById('signupRoom')?.value.trim()||'',
+          landmark: document.getElementById('signupLandmark')?.value.trim()||'',
+          updated: Date.now()
+        };
+        localStorage.setItem('kova_location', JSON.stringify(loc));
+        fd.set('address', loc.address);
+        fd.set('building', loc.building);
+        fd.set('room', loc.room);
+        fd.set('landmark', loc.landmark);
+        fd.set('lat', loc.lat);
+        fd.set('lng', loc.lng);
+        fd.set('location', JSON.stringify(loc));
+
         const res=await fetch(`${this.WORKER_URL}/api/guest/signup`, {method:'POST', body: fd});
         const data=await res.json(); if(!res.ok) throw new Error(data.error||'Signup failed');
         localStorage.setItem('kova_token', data.token); localStorage.setItem('kova_guest', JSON.stringify(data.guest));
         await syncToServer(data.token);
-        showOk(`Welcome ${data.guest.name}!`); setTimeout(()=>{ location.hash='#/'; location.reload(); }, 900);
+        showOk(`Welcome ${data.guest.name}!`);
+        setTimeout(()=>{
+          const hashQuery = location.hash.split('?')[1] || '';
+          const params = new URLSearchParams(hashQuery);
+          const next = params.get('next');
+          const pending = localStorage.getItem('kova_pending_checkout');
+          if(pending || next){
+            location.hash = `#/${next||'orders'}`;
+            location.reload();
+          } else {
+            location.hash='#/';
+            location.reload();
+          }
+        }, 900);
       }catch(err){ showErr(err.message); } finally{ btn.disabled=false; btn.textContent='Create Account →'; }
     });
+
   }
 };

@@ -1,4 +1,4 @@
-// KOVA Settings - FULL + LIVE MAP + PHOTO EDIT
+// KOVA Settings - FULL + LIVE MAP + PHOTO EDIT + BUILDING/ROOM/LANDMARK
 export const Settings = {
   GUEST_WORKER: 'https://kova-guest-sign-up.dopetone701.workers.dev',
 
@@ -36,74 +36,21 @@ export const Settings = {
        .loc-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg-app);border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:600}
        .loc-dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
        .far-alert{background:rgba(255,193,7,.15);border:1px solid rgba(255,193,7,.4);color:#ffc107;border-radius:12px;padding:12px 14px;font-size:13px;display:flex;gap:10px;align-items:center;justify-content:space-between}
-
-       /* === SETTINGS LIGHT FIX - ADDITIVE === */
-[data-theme="light"] body, [data-theme="light"] #app{
-  background: #E6DFD3 !important;
-}
-[data-theme="light"] .st-wrap{
-  background: #E6DFD3 !important;
-  max-width: 760px !important;
-  margin: 24px auto !important;
-}
-
-/* All cards stay DARK in light - no white */
-[data-theme="light"] .st-card{
-  background: #1C1C1F !important;
-  border: 1px solid #27272A !important;
-  color: #F4F4F5 !important;
-}
-[data-theme="light"] .st-card b,
-[data-theme="light"] .st-card .st-lbl{
-  color: #F4F4F5 !important;
-}
-[data-theme="light"] .st-card .st-sub,
-[data-theme="light"] .st-card div[style*="color:var(--text-muted)"]{
-  color: #A1A1AA !important;
-}
-
-/* Inputs - your screenshot shows white empty inputs */
-[data-theme="light"] .st-input{
-  background: #0A0A0B !important;
-  color: #F4F4F5 !important;
-  border-color: #27272A !important;
-}
-[data-theme="light"] .st-input::placeholder{
-  color: #71717A !important;
-}
-
-/* Buttons */
-[data-theme="light"] .st-btn{
-  background: #27272A !important;
-  color: #F4F4F5 !important;
-  border-color: #27272A !important;
-}
-[data-theme="light"] .st-btn.primary{
-  background: #C8FF00 !important;
-  color: #000 !important;
-}
-[data-theme="light"] .st-btn.danger{
-  background: rgba(255,78,31,0.15) !important;
-  color: #FF4E1F !important;
-  border-color: rgba(255,78,31,0.3) !important;
-}
-
-/* Location badge */
-[data-theme="light"] .loc-badge{
-  background: #0A0A0B !important;
-  border-color: #27272A !important;
-  color: #F4F4F5 !important;
-}
-
-/* Map */
-[data-theme="light"] #liveMap{
-  border-color: #27272A !important;
-}
-
+       [data-theme="light"] body, [data-theme="light"] #app{ background: #E6DFD3 !important; }
+       [data-theme="light"] .st-wrap{ background: #E6DFD3 !important; max-width: 760px !important; margin: 24px auto !important; }
+       [data-theme="light"] .st-card{ background: #1C1C1F !important; border: 1px solid #27272A !important; color: #F4F4F5 !important; }
+       [data-theme="light"] .st-card b, [data-theme="light"] .st-card .st-lbl{ color: #F4F4F5 !important; }
+       [data-theme="light"] .st-card .st-sub, [data-theme="light"] .st-card div[style*="color:var(--text-muted)"]{ color: #A1A1AA !important; }
+       [data-theme="light"] .st-input{ background: #0A0A0B !important; color: #F4F4F5 !important; border-color: #27272A !important; }
+       [data-theme="light"] .st-input::placeholder{ color: #71717A !important; }
+       [data-theme="light"] .st-btn{ background: #27272A !important; color: #F4F4F5 !important; border-color: #27272A !important; }
+       [data-theme="light"] .st-btn.primary{ background: #C8FF00 !important; color: #000 !important; }
+       [data-theme="light"] .st-btn.danger{ background: rgba(255,78,31,0.15) !important; color: #FF4E1F !important; border-color: rgba(255,78,31,0.3) !important; }
+       [data-theme="light"] .loc-badge{ background: #0A0A0B !important; border-color: #27272A !important; color: #F4F4F5 !important; }
+       [data-theme="light"] #liveMap{ border-color: #27272A !important; }
       </style>
 
       <div class="st-wrap">
-        <!-- PROFILE -->
         <div class="st-card">
           <div class="st-h">
             <div class="st-av" id="avatarBox">
@@ -118,21 +65,18 @@ export const Settings = {
               <div style="margin-top:6px;display:flex;gap:6px">
                 <span class="loc-badge"><span class="loc-dot"></span> <span id="locText">${savedLoc? `${savedLoc.lat.toFixed(4)}, ${savedLoc.lng.toFixed(4)}` : 'No location set'}</span></span>
               </div>
-            </div>
             <button class="st-btn primary" id="editTopBtn">Edit</button>
           </div>
         </div>
 
-        <!-- FAR ALERT -->
         <div id="farAlert" style="display:none" class="far-alert">
           <div><b>📍 You seem far from your set location</b><br><span id="farDist"></span> away. Update for easy delivery?</div>
           <button class="st-btn primary" id="updateFarBtn" style="white-space:nowrap">Update</button>
         </div>
 
-        <!-- LIVE MAP -->
         <div class="st-card">
-          <div style="font-weight:900;margin-bottom:4px">Delivery Location</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Tap map to set location. Auto-detect uses GPS.</div>
+          <div style="font-weight:900;margin-bottom:4px">Delivery Location — Full Details</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Tap map to set pin. These details will show read-only on Orders page with ✎ to come back here.</div>
           <div id="liveMap"></div>
           <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
             <button class="st-btn primary" id="detectBtn">📍 Detect Automatically</button>
@@ -140,30 +84,33 @@ export const Settings = {
             <button class="st-btn" id="clearLocBtn">Clear</button>
             <span id="mapStatus" style="font-size:12px;color:var(--text-muted);align-self:center"></span>
           </div>
-          <div style="margin-top:10px">
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
             <input class="st-input" id="locAddress" placeholder="Address (auto or type) - e.g. Dubai Marina" value="${savedLoc?.address||''}" />
+            <input class="st-input" id="locBuilding" placeholder="Building / Villa — e.g. Al Barsha Tower A" value="${savedLoc?.building||''}" />
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <input class="st-input" id="locRoom" placeholder="Room / Flat No. — e.g. 1204" value="${savedLoc?.room||''}" />
+              <input class="st-input" id="locLandmark" placeholder="Landmark — e.g. Near mosque / Spinneys" value="${savedLoc?.landmark||''}" />
+            </div>
           </div>
         </div>
 
-        <!-- APPEARANCE -->
         <div class="st-card">
           <div style="font-weight:900;margin-bottom:6px">Appearance</div>
           <div class="st-row"><div><div class="st-lbl">Light Mode</div></div><div class="st-sw ${theme==='light'?'on':''}" id="themeSwitch"></div></div>
         </div>
 
-        <!-- ACCOUNT -->
         <div class="st-card">
-          <div style="font-weight:900;margin-bottom:12px">Profile</div>
+          <div style="font-weight:900;margin-bottom:12px">Profile — Rider will call these</div>
           <div style="display:flex;flex-direction:column;gap:10px">
             <input class="st-input" id="stName" placeholder="Full Name" value="${guest?.name||''}" />
-            <input class="st-input" id="stEmail" placeholder="Email" value="${guest?.email||''}" />
-            <input class="st-input" id="stPhone" placeholder="Phone" value="${guest?.phone||''}" />
-            <div style="display:flex;gap:10px;align-items:center"><button class="st-btn primary" id="saveProfileBtn">Save All (Profile + Location)</button><span id="saveMsg" style="font-size:12px;color:var(--text-muted)"></span></div>
+            <input class="st-input" id="stEmail" placeholder="Email — for receipt" value="${guest?.email||''}" />
+            <input class="st-input" id="stPhone" placeholder="Phone — rider will call this number" value="${guest?.phone||''}" />
+            <div style="display:flex;gap:10px;align-items:center"><button class="st-btn primary" id="saveProfileBtn">Save All (Profile + Location + Building)</button><span id="saveMsg" style="font-size:12px;color:var(--text-muted)"></span></div>
           </div>
         </div>
 
         <div class="st-card"><div style="display:flex;gap:10px"><button class="st-btn danger" id="logoutBtn" style="flex:1">Logout</button><button class="st-btn danger" id="deleteBtn" style="flex:1;background:rgba(255,90,90,.12)">Delete Account</button></div></div>
-        <div style="text-align:center;color:var(--text-muted);font-size:11px">KOVA v1.0 • Live Map • D1 Synced</div>
+        <div style="text-align:center;color:var(--text-muted);font-size:11px">KOVA v1.0 • Live Map • D1 Synced • Full Delivery Details</div>
       </div>
     `;
   },
@@ -172,18 +119,16 @@ export const Settings = {
     const $ = id=>document.getElementById(id);
     let guest=null; try{guest=JSON.parse(localStorage.getItem('kova_guest')||'null')}catch{}
     let savedLoc=null; try{savedLoc=JSON.parse(localStorage.getItem('kova_location')||'null')}catch{}
-    let currentPin = savedLoc? {lat:savedLoc.lat,lng:savedLoc.lng} : {lat:25.2048,lng:55.2708}; // Dubai default
+    let currentPin = savedLoc? {lat:savedLoc.lat,lng:savedLoc.lng} : {lat:25.2048,lng:55.2708};
     let map, marker;
     let newPhotoBase64 = null;
 
-    // Load Leaflet
     if(!window.L){
       await new Promise((res,rej)=>{
         const s=document.createElement('script'); s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s);
       });
     }
 
-    // Init Map
     setTimeout(()=>{
       map = L.map('liveMap').setView([currentPin.lat, currentPin.lng], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(map);
@@ -194,7 +139,6 @@ export const Settings = {
       map.on('click', (e)=>{
         currentPin={lat:e.latlng.lat,lng:e.latlng.lng}; marker.setLatLng(e.latlng); reverseGeocode(e.latlng.lat,e.latlng.lng);
       });
-      if(savedLoc) $('locAddress').value = savedLoc.address||'';
     },100);
 
     const reverseGeocode = async(lat,lng)=>{
@@ -206,7 +150,6 @@ export const Settings = {
       }catch{}
     };
 
-    // PHOTO EDIT
     $('avatarBox')?.addEventListener('click',()=> $('photoInput').click());
     $('photoInput')?.addEventListener('change', (e)=>{
       const file=e.target.files[0]; if(!file) return;
@@ -220,7 +163,6 @@ export const Settings = {
       reader.readAsDataURL(file);
     });
 
-    // DETECT AUTOMATICALLY
     $('detectBtn')?.addEventListener('click', ()=>{
       if(!navigator.geolocation){ alert('GPS not supported'); return; }
       if($('mapStatus')) $('mapStatus').textContent='Detecting...';
@@ -237,11 +179,13 @@ export const Settings = {
 
     $('setMapBtn')?.addEventListener('click', ()=>{
       const addr=$('locAddress').value.trim();
-      const loc={lat:currentPin.lat,lng:currentPin.lng,address:addr||`${currentPin.lat.toFixed(5)},${currentPin.lng.toFixed(5)}`,updated:Date.now()};
+      const building=$('locBuilding')?.value.trim()||'';
+      const room=$('locRoom')?.value.trim()||'';
+      const landmark=$('locLandmark')?.value.trim()||'';
+      const loc={lat:currentPin.lat,lng:currentPin.lng,address:addr||`${currentPin.lat.toFixed(5)},${currentPin.lng.toFixed(5)}`,building,room,landmark,updated:Date.now()};
       localStorage.setItem('kova_location', JSON.stringify(loc));
       if($('locText')) $('locText').textContent=`${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`;
-      if($('mapStatus')) $('mapStatus').textContent='Location saved ✓';
-      // hide far alert
+      if($('mapStatus')) $('mapStatus').textContent='Location + building saved ✓';
       const fa=$('farAlert'); if(fa) fa.style.display='none';
     });
 
@@ -249,9 +193,9 @@ export const Settings = {
       localStorage.removeItem('kova_location');
       if($('locText')) $('locText').textContent='No location set';
       if($('mapStatus')) $('mapStatus').textContent='Cleared';
+      ['locAddress','locBuilding','locRoom','locLandmark'].forEach(id=>{ if($(id)) $(id).value=''; });
     });
 
-    // FAR DISTANCE CHECK
     const haversine = (a,b)=>{
       const R=6371; const dLat=(b.lat-a.lat)*Math.PI/180; const dLng=(b.lng-a.lng)*Math.PI/180;
       const x=Math.sin(dLat/2)**2 + Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;
@@ -260,42 +204,34 @@ export const Settings = {
     const checkFarDistance = (current)=>{
       if(!savedLoc) return;
       const dist = haversine(savedLoc, current);
-      if(dist>3){ // >3km
+      if(dist>3){
         $('farDist').textContent=`${dist.toFixed(1)} km`;
         $('farAlert').style.display='flex';
       }
     };
-    // auto check on load with GPS
     if(savedLoc && navigator.geolocation){
       navigator.geolocation.getCurrentPosition(p=>{
         checkFarDistance({lat:p.coords.latitude,lng:p.coords.longitude});
       });
     }
-
-    $('updateFarBtn')?.addEventListener('click', ()=>{
-      $('setMapBtn').click();
-    });
-
-    // THEME
+    $('updateFarBtn')?.addEventListener('click', ()=>{ $('setMapBtn').click(); });
     $('themeSwitch')?.addEventListener('click', function(){ this.classList.toggle('on'); window.toggleTheme&&window.toggleTheme(); });
 
-    // SAVE PROFILE + LOCATION + PHOTO
     $('saveProfileBtn')?.addEventListener('click', async()=>{
       const name=$('stName').value.trim(), email=$('stEmail').value.trim(), phone=$('stPhone').value.trim();
       const address=$('locAddress').value.trim();
-      const loc={lat:currentPin.lat,lng:currentPin.lng,address,updated:Date.now()};
+      const building=$('locBuilding')?.value.trim()||'';
+      const room=$('locRoom')?.value.trim()||'';
+      const landmark=$('locLandmark')?.value.trim()||'';
+      const loc={lat:currentPin.lat,lng:currentPin.lng,address,building,room,landmark,updated:Date.now()};
       $('saveMsg').textContent='Saving...';
       try{
         localStorage.setItem('kova_location', JSON.stringify(loc));
-        // save guest locally
         let g=guest||{}; g.name=name; g.email=email; g.phone=phone;
-        if(newPhotoBase64) g.photo_url=newPhotoBase64; // base64 fallback
+        if(newPhotoBase64) g.photo_url=newPhotoBase64;
         localStorage.setItem('kova_guest', JSON.stringify(g));
-
-        // try D1 + photo upload
         const token=localStorage.getItem('kova_token');
         if(token){
-          // upload photo if exists
           let photoUrl=g.photo_url;
           if(newPhotoBase64 && newPhotoBase64.startsWith('data:')){
             try{
@@ -315,7 +251,8 @@ export const Settings = {
             localStorage.setItem('kova_guest', JSON.stringify(d.guest||{...g,photo_url:photoUrl}));
           }
         }
-        $('saveMsg').textContent='All saved ✓'; window.Topbar?.render();
+        $('saveMsg').textContent='All saved ✓ — Orders page will show read-only proof';
+        window.Topbar?.render();
         if($('locText')) $('locText').textContent=`${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`;
       }catch(e){ $('saveMsg').textContent='Failed: '+e.message; }
     });

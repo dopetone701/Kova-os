@@ -231,14 +231,35 @@ export const Admin = {
               ${items.map(it=>`<span style="font-size:10px;background:var(--bg-card);border:1px solid var(--border);padding:4px 8px;border-radius:999px">${it.title||it.item_id} x${it.qty}</span>`).join('')}
             </div>
             <div style="margin-top:8px;font-size:11px;color:var(--text-muted)">👤 ${o.guest_name} • ${o.guest_email} • ${o.guest_phone||'No phone'}</div>
-            <div style="margin-top:8px;display:flex;gap:6px">
-              ${['pending','preparing','ready','done'].map(s=>`<button onclick="window.updateOrderStatus('${o.id}','${s}')" style="padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:${o.status===s?'var(--accent)':'var(--bg-card)'};color:${o.status===s?'#000':'var(--text-muted)'};font-size:10px;font-weight:700;cursor:pointer">${s}</button>`).join('')}
+                       <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              ${[
+                {k:'pending', label:'Pending', bg:'#FFC107'},
+                {k:'preparing', label:'Preparing', bg:'#FF4E1F'},
+                {k:'ready', label:'Ready', bg:'#38BDF8'},
+                {k:'on_the_way', label:'On the way', bg:'#38BDF8'},
+                {k:'delivered', label:'Delivered', bg:'#22C55E'},
+                {k:'done', label:'Done', bg:'#22C55E'}
+              ].map(s=>{
+                const isActive = (o.status||'').toLowerCase().replace(/\s+/g,'_')===s.k;
+                return `<button onclick="window.updateOrderStatus('${o.id}','${s.k}')" style="padding:5px 10px;border-radius:999px;border:1px solid ${isActive?'transparent':'var(--border)'};background:${isActive?s.bg:'var(--bg-card)'};color:${isActive?'#000':'var(--text-muted)'};font-size:10px;font-weight:800;cursor:pointer">${s.label}${isActive?' ✓':''}</button>`;
+              }).join('')}
             </div>
+
           </div>
         `;
       }).join('');
 
+           // normalize status before send
+      const sendStatus = (s)=>{
+        if(s==='on_the_way' || s==='out_for_delivery') return 'on_the_way';
+        if(s==='delivered') return 'delivered';
+        if(s==='done') return 'done';
+        return s;
+      };
+
       window.updateOrderStatus = async (id, status)=>{
+        status = sendStatus(status);
+
         try{
           const token = localStorage.getItem('kova_token');
           const r = await fetch(`${GUEST_WORKER}/api/admin/orders/${id}/status`, {method:'PATCH', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body: JSON.stringify({status})});
